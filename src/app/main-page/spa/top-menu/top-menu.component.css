@@ -1,0 +1,26 @@
+.container {
+    width: 100%;
+}
+
+ul {
+    display: flex;
+    /* justify-content: space-between; */
+    list-style-type: none;
+    padding: 0;
+    margin:5px;
+}
+
+li {
+    border: 1px solid #e2cece;
+    padding: 2px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 200ms all;
+    transition-timing-function: ease-out
+}
+
+li:hover {
+    padding: 2px 25px;
+    background-color: #e2cece;
+}

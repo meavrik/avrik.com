@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #6e3737;
+    /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+    margin: 0;
+    /* font-family: 'Raleway', sans-serif; */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* font-weight: 300; */
+    height: 100%;
+    overflow: hidden;
+}

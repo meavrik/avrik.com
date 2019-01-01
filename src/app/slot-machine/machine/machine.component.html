@@ -1,0 +1,26 @@
+<div id="stage" class="perspective-on">
+  <div id="rotate">
+    <div *ngFor="let item of slots;let i = index" [id]="getRingId(i)" class="ring">
+
+      <div class="slot" *ngFor="let item2 of reels;let j = index" [style.transform]="getSlotTransform(j)">
+        <p> {{getNum(j)}}</p>
+      </div>
+    </div>
+
+  </div>
+  <div>
+    <button class="go">Start spinning</button>
+  </div>
+
+  <!-- <div>
+        <label>
+            <input type="checkbox" id="xray">
+            Show inner workings
+        </label>
+        <label>
+            <input type="checkbox" id="perspective">
+            Toggle perspective
+        </label>
+    </div> -->
+
+</div>

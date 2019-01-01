@@ -1,0 +1,13 @@
+.container {
+    display: flex;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.chips {
+    border-radius: 5px;
+    margin:2px;
+    padding: 5px 10px;
+    background-color: rgb(84, 84, 173);
+    color: white;
+}

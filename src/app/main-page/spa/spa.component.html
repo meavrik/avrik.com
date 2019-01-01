@@ -1,0 +1,39 @@
+<div class="container">
+  <h1 class="main-title">{{title}}</h1>
+  
+  <p style="font-size:20px;line-height: 20px;margin:15px 0 25px 0">  Senior Developer at <img  src="assets/att_logo2.png" alt="" height="15">AT&T Foundry™ innovation center</p>
+
+  <!-- <div class="screen-container ">
+      <div class="screen"></div>
+      <img src="assets/mac.png" alt="">
+  </div> -->
+
+  <div class="test">
+    <pc-wrapper>
+      <top-menu></top-menu>
+
+      <span *ngIf="data" class="filters-container">
+        <filter-dropdown *ngFor="let item of data.filters" [data]="item"></filter-dropdown>
+        <!-- <filter-dropdown></filter-dropdown>
+        <filter-dropdown></filter-dropdown>
+        <filter-dropdown></filter-dropdown> -->
+      </span>
+      <my-card *ngIf="chartData">
+        <my-chart [data]="chartData"></my-chart>
+      </my-card>
+    </pc-wrapper>
+
+
+  </div>
+
+  <div style="position:absolute;bottom:20px ;right:25px; ">
+    <mobile-wrapper>
+      <!-- <my-card>
+        <p>header</p>
+      </my-card>
+      <filter-dropdown></filter-dropdown>
+      <filter-dropdown></filter-dropdown> -->
+      <login></login>
+    </mobile-wrapper>
+  </div>
+</div>

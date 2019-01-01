@@ -1,0 +1,46 @@
+<div class="container" [style.background-color]="data.color">
+
+    <img [src]="data.icon" alt="" >
+
+    <span style="display:flex">
+        <h1 class="title">{{data.title}}</h1>
+        <p style="padding:0 5px 5px 5px">{{data.subTitle}}</p>
+    </span>
+
+    <div style="display:flex;text-align: center;font-size: 12px">
+        <span *ngFor="let item of data.knowledge">
+            <div class="glass">
+                <div class="glass-fill" [style.height]="(100-item.value)+'%'">
+
+                </div>
+            </div>
+       
+            <span>
+                <p style="margin:5px">{{item.title}}</p>
+                <img [src]="item.icon?item.icon:'assets/angular.png'" alt="" height="50">
+            </span>
+
+        </span>
+
+    </div>
+
+    <section> {{data.content}}</section>
+
+    <div style="margin-top:20px;display:flex">
+        <!-- <span *ngFor="let item of data.icons" class="icon">
+            <img class="mover" [src]="item.url" alt="" height="80">
+            <p class="logo-title">{{item.title}}</p>
+        </span> -->
+
+    </div>
+
+   
+    <!-- <video style="height:300px" autoplay src="/assets/cvaas_ps1.mov"></video> -->
+    <div class="clip" style="display: flex;margin:20px 0 0 -150px;background-color: black;">
+        <img class="clip" src="assets/test.jpg" alt="" height="400">
+        <img class="clip" src="assets/test.jpg" alt="" height="400">
+        <img class="clip" src="assets/test.jpg" alt="" height="400">
+        
+    </div>
+
+</div>

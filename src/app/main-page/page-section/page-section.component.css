@@ -1,0 +1,77 @@
+
+
+.container {
+    padding:50px 0 0px 40px;
+    /* box-shadow: -2px 1px 14px 2px #00000069; */
+    overflow: hidden;
+}
+
+.title {
+    margin:0px 0 15px 0;
+}
+
+.clip {
+
+    border: 5px solid black;
+    clip-path: polygon(0% 0%, 100% 0, 100% 100%, 0% 100%);
+    margin: 0 -90px 0 0;
+
+    
+}
+
+.icon {
+    text-align:center;
+    font-weight:bold;
+    margin:0 20px;
+    
+}
+
+.mover {
+    animation: move 1s infinite ease-in-out;
+}
+
+.logo-title {
+    margin: 0;
+    color: #5f504c;
+    background-color: #00000017;
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-weight: 100;
+    font-size: 13px;
+}
+
+@keyframes move {
+    0% {
+      transform: translate(0, 0);
+    }
+  
+    /* Finish changes by here */
+    50% {
+      transform: translate(0, -10px);
+    }
+  
+    /* Between 20% and 100%, nothing changes */
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+  
+  .glass {
+    background-color: rgb(255, 255, 255);
+    /* border:1px solid rgb(255, 255, 255); */
+    width:50px;
+    height: 150px;
+    border-radius: 3px;
+    margin:10px;
+    opacity: 0.8;
+  }
+.glass-fill {
+    background-color: rgb(0, 0, 0);
+    height: 80%;
+    width:100%;
+}
+/* .test {
+    position: sticky;
+  top: -1px;
+  
+} */
