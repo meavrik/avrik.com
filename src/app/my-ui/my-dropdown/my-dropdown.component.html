@@ -1,8 +1,0 @@
-<div class="dropdown">
-  <button (click)="onClick()" class="dropbtn">{{title}}</button>
-  <div *ngIf="options" [hidden]="!show" id="myDropdown" class="dropdown-content">
-    <a *ngFor="let item of options" href="#">{{item.label}}</a>
-    <!-- <a href="#">Link 2</a>
-    <a href="#">Link 3</a> -->
-  </div>
-</div>
