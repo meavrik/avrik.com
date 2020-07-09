@@ -7,7 +7,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 })
 export class MainComponent implements OnInit {
   currentFocus
-  @ViewChild('inp') inp: ElementRef;
+  @ViewChild('inp', { static: true }) inp: ElementRef;
 
   completeArr = ['About', 'contact', 'history', 'what', 'who', 'why', 'story', 'portfolio']
   suggestionsArr = [];

@@ -1,4 +1,5 @@
 .container {
+  padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,37 +15,36 @@
   }
 
   .input-container {
+    margin: 0 -30px;
     position: relative;
     transform: rotate(1deg);
     z-index: 9;
     input {
       background: white;
-      border-radius: 22px;
+      border-radius: 15px;
       box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
       cursor: text;
       font-size: 16px;
-      height: 64px;
-      margin: 0 auto;
-      max-width: 584px;
-      // position: relative;
+      height: 60px;
       transition: none;
       border: none;
       padding: 10px 20px;
       outline: none;
+      width: 100%;
     }
 
     .dropdown {
       position: absolute;
       width: 100%;
     //   box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
-     
+
 
       .dropdown-item {
         border-bottom: 1px solid rgb(214, 208, 208);
         padding: 15px 10px;
         background-color: white;
         box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
-        
+
         cursor: pointer;
 
         &:hover {
