@@ -19,15 +19,18 @@
     width: 50%;
     background: white;
     border-radius: 25px;
-    box-shadow: inset 1px 2px 4px 0px rgb(32 33 36 / 28%);
+    box-shadow: 1px 2px 4px 0px rgb(32 33 36 / 28%);
     cursor: text;
     font-size: 16px;
-    height: 60px;
+    height: 50px;
     transition: none;
-    border: none;
-    padding: 10px 20px;
+    border: 1px solid #d970d6;
+    padding: 10px 30px;
     outline: none;
-    // width: 100%;
+
+    &::placeholder {
+      opacity: 0.3;
+    }
   }
 
   .dropdown {
@@ -55,5 +58,11 @@
         border-radius: 0 0 10px 10px;
       }
     }
+  }
+
+  .cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    // justify-content: space-between;
   }
 }

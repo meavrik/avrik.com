@@ -14,11 +14,15 @@
   action="completeArr"
   autocomplete="on"
   type="search"
-  placeholder="So... what do you want to know?"
+  placeholder="Search for skill, field, technology?"
   name=""
   id=""
   autofocus
 />
+
+<div class="cards-grid">
+  <app-card *ngFor="let card of filteredCards" [card]="card"></app-card>
+</div>
 
 <!-- <select id="cars">
   <option value="volvo">Red</option>
