@@ -1,26 +1,32 @@
-<div class="container">
-  <div>
+<h1>
+  A<span style="color: #ea4335">v</span>
+  <span style="color: #fbbc05; font-weight: 300">r</span>
+  <span style="color: #34a853; font-weight: 200">i</span>
+  <span style="font-weight: 100">k</span>
+  <span style="font-weight: 100; font-size: 14px">.com</span>
+</h1>
 
-    <h1>
-      A<span style="color:#EA4335">v</span>
-      <span style="color:#FBBC05;font-weight: 300">r</span>
-      <span style="color:#34A853;font-weight: 200">i</span>
-      <span style="font-weight: 100">k</span>
-      <span style="font-weight: 100;font-size:14px">.com</span>
-    </h1>
+<input
+  (input)="onInputChange($event)"
+  #inp
+  [(ngModel)]="searchStr"
+  class="autocomplete"
+  action="completeArr"
+  autocomplete="on"
+  type="search"
+  placeholder="So... what do you want to know?"
+  name=""
+  id=""
+  autofocus
+/>
 
-    <div class="input-container">
-      <input (input)="onInputChange($event)" #inp [(ngModel)]="searchStr" class="autocomplete" action="completeArr"
-        autocomplete="on" type="search" placeholder="So... what do you want to know?" name="" id="" autofocus>
+<!-- <select id="cars">
+  <option value="volvo">Red</option>
+  <option value="saab">Green</option>
+  <option value="opel">Blue</option>
+  <option value="audi">Audi</option>
+</select>
 
-      <div class="dropdown">
-        <div class="dropdown-item" *ngFor="let item of suggestionsArr">
-          {{item}}
-        </div>
-      </div>
-    </div>
+<canvas #chart [data]="data" id="myChart" width="400" height="400"></canvas> -->
 
-    <p style="opacity: 0.5;font-size: 11px;">hint : 'who are you?'</p>
-
-  </div>
-</div>
+<!-- <p style="opacity: 0.5; font-size: 11px">hint : 'who are you?'</p> -->
