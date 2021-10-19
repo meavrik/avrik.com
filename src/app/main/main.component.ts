@@ -11,7 +11,7 @@ export class MainComponent implements OnInit {
   @ViewChild("chart") chartRef: ElementRef;
   @ViewChild("inp", { static: true }) inp: ElementRef;
 
-  completeArr = [
+  /* completeArr = [
     "About",
     "contact",
     "history",
@@ -21,7 +21,7 @@ export class MainComponent implements OnInit {
     "story",
     "portfolio",
   ];
-  suggestionsArr = [];
+  suggestionsArr = []; */
   searchStr = "";
 
   cards = [
@@ -76,6 +76,11 @@ export class MainComponent implements OnInit {
       tags: ["web", "backend", "fullstack"],
     },
     {
+      title: "Loop back",
+      icon: "html",
+      tags: ["web", "backend", "fullstack"],
+    },
+    {
       title: "MongoDB",
       icon: "html",
       tags: ["web", "backend", "db"],
@@ -100,12 +105,57 @@ export class MainComponent implements OnInit {
       icon: "photoshop",
       tags: ["design", "ui", "ux", "sketch"],
     },
+    {
+      title: "Jenkins",
+      icon: "photoshop",
+      tags: ["devops"],
+    },
+    {
+      title: "Google cloud",
+      icon: "photoshop",
+      tags: ["devops"],
+    },
+    {
+      title: "RxJS",
+      icon: "photoshop",
+      tags: ["library", 'state managment'],
+    },
+    {
+      title: "Redux",
+      icon: "photoshop",
+      tags: ["library", 'state managment'],
+    },
+    {
+      title: "ChartJS",
+      icon: "photoshop",
+      tags: ["library", 'charts', 'ui'],
+    },
+    {
+      title: "Postman",
+      icon: "photoshop",
+      tags: ['development tools'],
+    },
+    {
+      title: "npm",
+      icon: "photoshop",
+      tags: ['development tools'],
+    },
+    {
+      title: "ExpressJS",
+      icon: "photoshop",
+      tags: ['backend', 'fullstack'],
+    },
+    {
+      title: "D3",
+      icon: "photoshop",
+      tags: ['library', 'frontend', 'ui', 'charts'],
+    },
   ];
   filteredCards = [...this.cards];
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onInputChange(event) {
     this.filteredCards = this.cards.filter(
