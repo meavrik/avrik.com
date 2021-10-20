@@ -1,0 +1,17 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    position: fixed;
+    right: 10px;
+
+    a {
+        transition: 200ms ease-out all;
+        margin: 5px;
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+    }
+}

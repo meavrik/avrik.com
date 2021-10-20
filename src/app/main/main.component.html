@@ -6,22 +6,25 @@
   <span style="font-weight: 100; font-size: 14px">.com</span>
 </h1>
 
-<input
-  (input)="onInputChange($event)"
-  #inp
-  [(ngModel)]="searchStr"
-  class="autocomplete"
-  action="completeArr"
-  autocomplete="on"
-  type="search"
-  placeholder="Search for skill, field, technology?"
-  name=""
-  id=""
-  autofocus
-/>
+<input (input)="onInputChange($event)" #inp [(ngModel)]="searchStr" class="autocomplete" action="completeArr"
+  autocomplete="on" type="search" placeholder="Search for skill, field, technology" name="" id="" autofocus />
+
+
+<span class="slider-container">
+  <div class="slider-text">
+    <p>Developer</p>
+    <p>Frontend</p>
+    <p>Backend</p>
+    <p>Fullstack</p>
+    <p>Tech lead</p>
+  </div>
+  <input #slider type="range" step="1" min="0" max="4" value="4" class="slider" id="myRange"
+    (change)="onSlider(slider.value)">
+</span>
+
 
 <div class="cards-grid">
-  <app-card *ngFor="let card of filteredCards" [card]="card"></app-card>
+  <app-card *ngFor="let card of filteredCards" @hideShow [card]="card"></app-card>
 </div>
 
 <!-- <select id="cars">
