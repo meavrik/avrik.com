@@ -15,7 +15,7 @@
     letter-spacing: 0;
   }
 
-  input {
+  .autocomplete {
     width: 50%;
     background: white;
     border-radius: 25px;
@@ -30,6 +30,18 @@
 
     &::placeholder {
       opacity: 0.3;
+    }
+  }
+
+  .slider-container {
+    width: 50%;
+    .slider-text {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .slider {
+      width: 100%;
     }
   }
 

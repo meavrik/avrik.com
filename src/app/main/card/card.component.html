@@ -1,4 +1,4 @@
-<img [src]="'./assets/' + card.icon + '.png'" height="100" alt="" />
+<img [src]="'./assets/' + (card.icon || card.title.toLowerCase() ) + '.png'" height="80" alt="" />
 
 <p>{{ card.title }}</p>
 
