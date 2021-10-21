@@ -119,7 +119,6 @@ export class MainComponent implements OnInit {
     },
     {
       title: "Jenkins",
-      icon: "photoshop",
       tags: ["devops"],
       level: 4,
     },
