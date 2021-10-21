@@ -1,78 +1,65 @@
 :host {
-  padding: 20px;
+  // padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   // height: 100%;
 
-  h1 {
-    text-align: left;
-    font-size: 6em;
-    font-weight: 600;
-    color: #4285f4;
-    margin: 2px;
-    letter-spacing: 0;
-  }
-
-  .autocomplete {
-    width: 50%;
-    background: white;
-    border-radius: 25px;
-    box-shadow: 1px 2px 4px 0px rgb(32 33 36 / 28%);
-    cursor: text;
-    font-size: 16px;
-    height: 50px;
-    transition: none;
-    border: 1px solid #d970d6;
-    padding: 10px 30px;
-    outline: none;
-
-    &::placeholder {
-      opacity: 0.3;
-    }
-  }
-
-  .slider-container {
-    width: 50%;
-    .slider-text {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .slider {
-      width: 100%;
-    }
-  }
-
-  .dropdown {
-    position: absolute;
+  header {
+    position: fixed;
+    top: 10px;
     width: 100%;
-    //   box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    h1 {
+      text-align: left;
+      font-size: 6em;
+      font-weight: 600;
+      color: #4285f4;
+      margin: 2px;
+      letter-spacing: 0;
+    }
 
-    .dropdown-item {
-      border-bottom: 1px solid rgb(214, 208, 208);
-      padding: 15px 10px;
-      background-color: white;
-      box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+    .autocomplete {
+      width: 50%;
+      background: white;
+      border-radius: 25px;
+      box-shadow: 1px 2px 4px 0px rgb(32 33 36 / 28%);
+      cursor: text;
+      font-size: 16px;
+      height: 50px;
+      transition: none;
+      border: 1px solid #d970d6;
+      padding: 10px 30px;
+      outline: none;
 
-      cursor: pointer;
+      &::placeholder {
+        opacity: 0.3;
+      }
+    }
 
-      &:hover {
-        background-color: rgb(243, 236, 236);
+    .slider-container {
+      width: 50%;
+      .slider-text {
+        display: flex;
+        justify-content: space-between;
       }
 
-      &:nth-child(1) {
-        border-radius: 20px 10px 0 0;
-      }
-
-      &:last-child {
-        border-radius: 0 0 10px 10px;
+      .slider {
+        width: 100%;
       }
     }
   }
 
   .cards-grid {
+    width: 100%;
+    box-shadow: inset 1px 3px 5px 2px #0000000f;
+    margin-top: 260px;
+    height: calc(100vh - 260px);
+    overflow: auto;
     display: flex;
     flex-wrap: wrap;
     // justify-content: space-between;
