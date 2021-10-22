@@ -17,13 +17,14 @@
   margin: 10px;
   color: #092733;
   font-size: 1rem;
-  box-shadow: 1px 1px 5px 0px rgb(32 33 36 / 28%);
+  box-shadow: 0px 0 3px 0px rgb(32 33 36 / 25%);;
   transition: 200ms ease-out all;
   cursor: pointer;
 
   &:hover {
     font-size: 1.2rem;
-    box-shadow: 1px 4px 9px 0px rgb(32 33 36 / 28%);
+    box-shadow:1px 6px 11px 0px rgb(32 33 36 / 28%);
+    
     font-weight: 500;
     // height: 240px;
   }

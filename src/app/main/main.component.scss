@@ -44,8 +44,13 @@
     .slider-container {
       width: 50%;
       .slider-text {
+        color: #0f334145;
+        align-items: center;
         display: flex;
         justify-content: space-between;
+        p {
+          color: #0f3341;
+        }
       }
 
       .slider {

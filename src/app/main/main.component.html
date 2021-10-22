@@ -7,25 +7,59 @@
     <span style="font-weight: 100; font-size: 14px">.com</span>
   </h1>
 
-  <input (input)="onInputChange($event)" #inp [(ngModel)]="searchStr" class="autocomplete" action="completeArr"
-    autocomplete="on" type="search" placeholder="Search for skill, field, technology" name="" id="" autofocus />
-
+  <input
+    (input)="onInputChange($event)"
+    #inp
+    [(ngModel)]="searchStr"
+    class="autocomplete"
+    action="completeArr"
+    autocomplete="on"
+    type="search"
+    placeholder="Search for skill, field, tool, technology ..."
+    name=""
+    id=""
+    autofocus
+  />
 
   <span class="slider-container">
     <div class="slider-text">
       <p>UI/UX</p>
+      &
       <p>Frontend</p>
+      &
       <p>Backend</p>
+      &
       <p>Fullstack</p>
-      <p>Tech lead</p>
+      &
+      <p>Devops</p>
     </div>
-    <input #slider type="range" step="1" min="0" max="4" value="4" class="slider" id="myRange"
-      (change)="onSlider(slider.value)">
+    <input
+      #slider
+      type="range"
+      step="1"
+      min="0"
+      max="4"
+      value="4"
+      class="slider"
+      id="myRange"
+      (change)="onSlider(slider.value)"
+    />
   </span>
+
+<!--   <span style="display: flex">
+    <img height="30" src="./assets/svg/list-menu.svg" alt="" />
+    <img height="30" src="./assets/svg/menu-grid.svg" alt="" />
+  </span> -->
 </header>
 
+
 <div class="cards-grid">
-  <app-card *ngFor="let card of filteredCards" @hideShow [card]="card"></app-card>
+  <app-card
+    *ngFor="let card of filteredCards"
+    @hideShow
+    [card]="card"
+    (click)="onCardClick(card)"
+  ></app-card>
 </div>
 
 <!-- <select id="cars">
