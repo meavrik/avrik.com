@@ -1,6 +1,5 @@
 import { trigger, transition, style, animate } from "@angular/animations";
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-// import { Chart } from "chart.js";
+import { Component, ViewChild, ElementRef } from "@angular/core";
 
 @Component({
   selector: "app-main",
@@ -19,8 +18,7 @@ import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
     ]),
   ],
 })
-export class MainComponent implements OnInit {
-  // @ViewChild("chart") chartRef: ElementRef;
+export class MainComponent {
   @ViewChild("inp", { static: true }) inp: ElementRef;
 
   searchStr = "";
@@ -78,6 +76,12 @@ export class MainComponent implements OnInit {
       title: "React",
       icon: "react-svgrepo-com",
       tags: ["web", "frontend", "framework"],
+      level: 1,
+    },
+    {
+      title: "React Native",
+      icon: "react-svgrepo-com",
+      tags: ["mobile", "frontend", "framework"],
       level: 1,
     },
     {
@@ -188,6 +192,12 @@ export class MainComponent implements OnInit {
       tags: ["development tools"],
       level: 1,
     },
+    {
+      title: "Yarn",
+      icon: "yarn-svgrepo-com",
+      tags: ["development tools"],
+      level: 1,
+    },
     /*   {
       title: "ExpressJS",
       icon: "photoshop",
@@ -200,14 +210,29 @@ export class MainComponent implements OnInit {
       tags: ["library", "frontend", "ui", "charts"],
       level: 1,
     },
+    {
+      title: "Jest",
+      icon: "jest-svgrepo-com",
+      tags: ["frontend", "framework", "testing"],
+      level: 1,
+    },
+    {
+      title: "Storybook",
+      icon: "storybook-svgrepo-com",
+      tags: ["frontend", "framework", "testing", "UI", "Design system"],
+      level: 1,
+    },
+    {
+      title: "NX",
+      icon: "nx-logo",
+      tags: ["frontend", "fullstack", "framework", "monorepo"],
+      level: 1,
+    },
   ];
+
   filteredCards = [...this.cards];
 
-  constructor() {}
-
-  ngOnInit() {}
-
-  onInputChange(event) {
+  onInputChange(event: MouseEvent) {
     this.filteredCards = this.cards.filter(
       (c) =>
         c.title.toLowerCase().indexOf(this.searchStr.toLowerCase()) !== -1 ||
