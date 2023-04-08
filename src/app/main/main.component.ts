@@ -1,6 +1,6 @@
 import { trigger, transition, style, animate } from "@angular/animations";
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { Chart } from "chart.js";
+// import { Chart } from "chart.js";
 
 @Component({
   selector: "app-main",
@@ -20,7 +20,7 @@ import { Chart } from "chart.js";
   ],
 })
 export class MainComponent implements OnInit {
-  @ViewChild("chart") chartRef: ElementRef;
+  // @ViewChild("chart") chartRef: ElementRef;
   @ViewChild("inp", { static: true }) inp: ElementRef;
 
   searchStr = "";
