@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VBPELYVW13"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-VBPELYVW13");
+    </script>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Avrik — AI Builder</title>
+    <meta
+      name="description"
+      content="Avrik Berman. AI builder and SDLC process improvement expert. I build AI systems that ship, and the delivery process that ships them."
+    />
+    <meta property="og:title" content="Avrik — AI Builder" />
+    <meta
+      property="og:description"
+      content="I build AI systems that ship. And the process that ships them."
+    />
+    <meta property="og:url" content="https://avrik.com" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0b0c0c" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+    <script>
+      // Apply saved theme before paint to avoid a flash.
+      try {
+        var t = localStorage.getItem("theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <!-- boot overlay: plays once per session -->
+    <div id="boot" aria-hidden="true"><pre id="boot-log"></pre></div>
+
+    <header class="bar">
+      <a href="#top" class="logo" data-scramble>avrik<span class="dim">.com</span></a>
+      <nav>
+        <a href="#whoami"><span class="dim">01</span> whoami</a>
+        <a href="#ai"><span class="dim">02</span> ai</a>
+        <a href="#sdlc"><span class="dim">03</span> sdlc</a>
+        <a href="#work"><span class="dim">04</span> work</a>
+        <a href="#contact"><span class="dim">05</span> contact</a>
+      </nav>
+      <button id="theme" class="theme" type="button" aria-label="Toggle color theme">[ dark ]</button>
+    </header>
+
+    <main id="top">
+      <!-- ───────────── hero ───────────── -->
+      <section class="hero">
+        <pre class="field" id="field" aria-hidden="true"></pre>
+        <div class="hero-inner">
+          <pre class="banner" id="banner" aria-label="Avrik">
+    _                   _   _
+   / \   __   __ _ __  (_) | | __
+  / _ \  \ \ / /| '__| | | | |/ /
+ / ___ \  \ V / | |    | | |   &lt;
+/_/   \_\  \_/  |_|    |_| |_|\_\</pre>
+          <p class="prompt"><span class="accent">&gt;</span> <span id="typed"></span><span class="cursor">_</span></p>
+          <p class="lede">
+            I build AI systems that ship.<br />
+            And the process that ships them.
+          </p>
+          <p class="tags">
+            <span>[ ai builder ]</span>
+            <span>[ agentic workflows ]</span>
+            <span>[ sdlc improvement ]</span>
+          </p>
+          <a class="scroll-hint" href="#whoami">↓ scroll</a>
+        </div>
+      </section>
+
+      <!-- ───────────── whoami ───────────── -->
+      <section id="whoami" class="section">
+        <h2 data-scramble><span class="dim">01 /</span> $ whoami</h2>
+        <div class="cols">
+          <ul class="lines">
+            <li>Engineer. Builder. Process nerd.</li>
+            <li>Full-stack roots. AI-first today.</li>
+            <li>I put LLMs at the core of products, not on the side.</li>
+            <li>I help teams rewire how software gets made.</li>
+            <li>Less ceremony. More shipping.</li>
+          </ul>
+          <pre class="card" aria-hidden="true">
++-------------------------------+
+| name     : avrik berman       |
+| role     : ai builder         |
+| focus    : agents + sdlc      |
+| mode     : ship, measure, fix |
+| status   : <span class="accent blink">●</span> available        |
++-------------------------------+</pre>
+        </div>
+      </section>
+
+      <!-- ───────────── ai builder ───────────── -->
+      <section id="ai" class="section">
+        <h2 data-scramble><span class="dim">02 /</span> ~/ai-builder</h2>
+        <p class="sub">What I build.</p>
+        <div class="grid">
+          <article class="box">
+            <h3>agents</h3>
+            <p>Agents that do real work. Tool use, MCP, multi-step workflows.</p>
+          </article>
+          <article class="box">
+            <h3>llm features</h3>
+            <p>AI in production. RAG, structured output, guardrails.</p>
+          </article>
+          <article class="box">
+            <h3>evals</h3>
+            <p>Evals before vibes. If it isn't measured, it isn't done.</p>
+          </article>
+          <article class="box">
+            <h3>economics</h3>
+            <p>Cost, latency, reliability. Designed in, not patched on.</p>
+          </article>
+          <article class="box">
+            <h3>speed</h3>
+            <p>Prototype in days. Harden in weeks. Kill fast if it doesn't work.</p>
+          </article>
+          <article class="box">
+            <h3>handoff</h3>
+            <p>Your team owns it after. Docs, tests, runbooks included.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ───────────── sdlc ───────────── -->
+      <section id="sdlc" class="section">
+        <h2 data-scramble><span class="dim">03 /</span> ~/sdlc</h2>
+        <p class="sub">How software gets made. Made faster.</p>
+
+        <figure class="pipeline">
+          <pre id="pipeline" aria-hidden="true"></pre>
+          <figcaption id="stage-note"><span class="accent">&gt;</span> <span id="stage-text"></span></figcaption>
+        </figure>
+
+        <ul class="lines two">
+          <li>Map the flow. Find the waiting. Cut it.</li>
+          <li>AI in every stage. Spec, code, review, test, release.</li>
+          <li>Humans own intent. Agents own repetition.</li>
+          <li>Smaller PRs. Faster reviews. Fewer handoffs.</li>
+          <li>Measure what matters. Lead time, cycle time, failure rate.</li>
+          <li>Playbooks teams keep using after I leave.</li>
+        </ul>
+      </section>
+
+      <!-- ───────────── work ───────────── -->
+      <section id="work" class="section">
+        <h2 data-scramble><span class="dim">04 /</span> ./work-with-me</h2>
+        <ol class="offers">
+          <li>
+            <span class="num">[01]</span>
+            <div><h3>ai readiness audit</h3><p>Two weeks. Where AI helps, where it doesn't, what to do first.</p></div>
+          </li>
+          <li>
+            <span class="num">[02]</span>
+            <div><h3>agentic sdlc rollout</h3><p>Coding agents, AI review, CI that keeps up. Adopted, not just installed.</p></div>
+          </li>
+          <li>
+            <span class="num">[03]</span>
+            <div><h3>build an ai product</h3><p>From idea to production. Small team. Real users. Real evals.</p></div>
+          </li>
+          <li>
+            <span class="num">[04]</span>
+            <div><h3>fractional ai lead</h3><p>A senior hand on the wheel. Strategy and code, same person.</p></div>
+          </li>
+        </ol>
+
+        <div class="stack">
+          <span class="dim">stack:</span>
+          llms · agents · mcp · evals · rag · typescript · node · react · angular · nx · docker · ci/cd
+        </div>
+      </section>
+
+      <!-- ───────────── contact ───────────── -->
+      <section id="contact" class="section">
+        <h2 data-scramble><span class="dim">05 /</span> $ contact --now</h2>
+        <p class="sub">Have a team that should ship faster? Let's talk.</p>
+        <div class="links">
+          <a href="https://www.linkedin.com/in/avrik-berman-3643a77" target="_blank" rel="noopener">[ linkedin ↗ ]</a>
+          <a href="https://github.com/meavrik" target="_blank" rel="noopener">[ github ↗ ]</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <pre aria-hidden="true">------------------------------------------------</pre>
+      <p>© <span id="year">2026</span> avrik.com <span class="dim">· built with an agent in the loop</span></p>
+    </footer>
+
+    <script src="assets/main.js"></script>
+  </body>
+</html>

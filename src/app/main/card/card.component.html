@@ -1,7 +1,0 @@
-<img [src]="'./assets/svg/' + (card.icon || card.title.toLowerCase() ) + '.svg'" height="80" alt="" />
-
-<p>{{ card.title }}</p>
-
-<div class="tags" *ngIf="card.tags">
-  <div class="tag" *ngFor="let item of card.tags">{{ item }}</div>
-</div>
