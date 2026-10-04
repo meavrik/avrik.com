@@ -235,15 +235,14 @@ h3 {
 
 .banner {
   color: var(--fg);
-  font-size: clamp(6px, 1.45vw, 15px);
-  line-height: 1.12;
+  font-size: clamp(7px, 1.6vw, 17px);
+  line-height: 1.15;
   font-weight: 600;
 }
 
-/* banner layers: edges solid, ':' faces tinted, sweep highlight, decode noise */
+/* banner layers: '/' strokes in ink, '_' strokes in accent, sweep highlight, decode noise */
 .banner .f {
   color: var(--accent);
-  opacity: 0.5;
 }
 
 .banner .hi {
@@ -258,19 +257,15 @@ h3 {
 }
 
 /* ascii portrait */
-/* always a dark "screen" so any photo background reads well in both themes */
+/* always a white "print" with black ink, in both themes */
 .portrait {
   position: relative;
   margin: 0;
-  padding: 14px 14px 10px;
-  background: #0b0c0c;
-  color: #d9dbd3;
-  --dim: #6b6e68;
-  --accent: #7dffb3;
-}
-
-:root[data-theme="light"] .portrait,
-:root:not([data-theme]) .portrait {
+  padding: 16px 16px 10px;
+  background: #ffffff;
+  color: #111111;
+  --dim: #9a9b95;
+  --accent: #0f7a4a;
   box-shadow: 0 0 0 1px var(--line);
 }
 
@@ -298,7 +293,7 @@ h3 {
 }
 
 #portrait-art {
-  font-size: clamp(8px, 1.05vw, 14px);
+  font-size: clamp(7px, 0.75vw, 10px);
   line-height: 1;
   letter-spacing: 0;
   cursor: crosshair;
@@ -667,7 +662,7 @@ footer p {
   }
 
   .banner {
-    font-size: clamp(6px, 2.7vw, 11px);
+    font-size: clamp(7px, 3.2vw, 13px);
   }
 
   .portrait {
@@ -675,7 +670,7 @@ footer p {
   }
 
   #portrait-art {
-    font-size: clamp(6px, 3.2vw, 12.5px);
+    font-size: clamp(6px, 2.2vw, 9px);
   }
 
   .has-portrait .scroll-hint {

@@ -140,7 +140,7 @@
     }));
     var cells = lines.map(function (l) {
       return Array.prototype.map.call(l, function (ch) {
-        return { ch: ch, kind: ch === " " ? "" : ch === "\\" ? "f" : "e", j: Math.random() };
+        return { ch: ch, kind: ch === " " ? "" : ch === "_" ? "f" : "e", j: Math.random() };
       });
     });
 
@@ -159,7 +159,7 @@
             ch = rand(GLYPHS);
             cls = "g";
           } else if (c.kind && sweep !== null) {
-            var d = x + (H - y) * 1.6 - sweep;
+            var d = x - (H - y) * 1.6 - sweep;
             if (d > -2.5 && d < 2.5) cls = "hi";
           }
           if (cls !== runCls) {
@@ -178,10 +178,11 @@
     function sweepOnce() {
       var start = performance.now();
       var span = W + H * 1.6 + 6;
+      var from = -3 - H * 1.6;
       (function f(now) {
         var p = (now - start) / 1400;
         if (p >= 1) return render(1, null);
-        render(1, -3 + p * span);
+        render(1, from + p * span);
         requestAnimationFrame(f);
       })(start);
     }
@@ -210,8 +211,8 @@
     if (!src) return;
 
     var RAMP = " .,:-=+*#%@";
-    var COLS = 44;
-    var FLOOR = 0.14; // min density for opaque pixels, keeps dark clothing/hair as a silhouette
+    var COLS = 40;
+    var FLOOR = 0.1; // min density for opaque pixels, keeps light skin as a faint silhouette
     var CELL = 0.6; // glyph width / line height
     var rows = 0;
     var lum = null; // 0..1 brightness per cell
@@ -337,7 +338,8 @@
         for (var x = 0; x < COLS; x++) {
           var sx = Math.min(COLS - 1, Math.max(0, x - shift));
           var k = y * COLS + sx;
-          var dens = (FLOOR + (1 - FLOOR) * lum[k]) * fade[k];
+          // ink on paper: dark pixels get dense glyphs
+          var dens = (FLOOR + (1 - FLOOR) * (1 - lum[k])) * fade[k];
           var ch = RAMP[Math.min(RAMP.length - 1, Math.round(dens * (RAMP.length - 1)))];
           var cls = lineCls;
           if (reveal < 1) {
