@@ -235,16 +235,12 @@ h3 {
 
 .banner {
   color: var(--fg);
-  font-size: clamp(7px, 1.6vw, 17px);
-  line-height: 1.15;
+  font-size: clamp(11px, 1.5vw, 18px);
+  line-height: 1.2;
   font-weight: 600;
 }
 
-/* banner layers: '/' strokes in ink, '_' strokes in accent, sweep highlight, decode noise */
-.banner .f {
-  color: var(--accent);
-}
-
+/* banner layers: sweep highlight, decode noise */
 .banner .hi {
   color: var(--accent);
   opacity: 1;
@@ -662,7 +658,7 @@ footer p {
   }
 
   .banner {
-    font-size: clamp(7px, 3.2vw, 13px);
+    font-size: clamp(11px, 3.6vw, 15px);
   }
 
   .portrait {

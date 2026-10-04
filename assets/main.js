@@ -140,7 +140,7 @@
     }));
     var cells = lines.map(function (l) {
       return Array.prototype.map.call(l, function (ch) {
-        return { ch: ch, kind: ch === " " ? "" : ch === "_" ? "f" : "e", j: Math.random() };
+        return { ch: ch, solid: ch !== " ", j: Math.random() };
       });
     });
 
@@ -154,11 +154,11 @@
         for (var x = 0; x < row.length; x++) {
           var c = row[x];
           var ch = c.ch;
-          var cls = c.kind === "f" ? "f" : "";
-          if (c.kind && decode < 1 && (x / W) * 0.8 + c.j * 0.2 > decode) {
+          var cls = "";
+          if (c.solid && decode < 1 && (x / W) * 0.8 + c.j * 0.2 > decode) {
             ch = rand(GLYPHS);
             cls = "g";
-          } else if (c.kind && sweep !== null) {
+          } else if (c.solid && sweep !== null) {
             var d = x - (H - y) * 1.6 - sweep;
             if (d > -2.5 && d < 2.5) cls = "hi";
           }
