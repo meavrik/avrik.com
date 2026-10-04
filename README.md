@@ -8,6 +8,13 @@ assets/style.css  theme tokens, layout, reveal transitions
 assets/main.js    boot sequence, banner decode, ascii field, sdlc pipeline, scroll reveals
 ```
 
+## ASCII portrait
+
+Drop a photo at `assets/portrait.jpg`. It's converted to ASCII in the browser
+at load time (auto-levels, sharpen, soft edges). Until the file exists the hero
+renders without it. Best results: tightly cropped head-and-shoulders, even
+lighting. A PNG with the background removed (transparent) works best of all.
+
 ## Run locally
 
 ```sh

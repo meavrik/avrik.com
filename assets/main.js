@@ -33,7 +33,6 @@
   function scramble(el, opts) {
     opts = opts || {};
     var duration = opts.duration || 650;
-    var byColumn = !!opts.byColumn;
     var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     var nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -43,13 +42,9 @@
     if (reduced) return;
 
     // per-char random jitter so the reveal looks organic
-    var maxCol = 1;
     var plan = finals.map(function (txt) {
-      var col = 0;
       return Array.prototype.map.call(txt, function (ch) {
-        var c = ch === "\n" ? ((col = 0), 0) : col++;
-        if (c > maxCol) maxCol = c;
-        return { ch: ch, col: c, j: Math.random() * 0.25 };
+        return { ch: ch, j: Math.random() * 0.25 };
       });
     });
     var total = finals.reduce(function (a, t) {
@@ -64,8 +59,7 @@
         var out = "";
         for (var i = 0; i < chars.length; i++, idx++) {
           var c = chars[i];
-          var pos = byColumn ? c.col / maxCol : idx / total;
-          var shown = p >= 1 || pos * 0.75 + c.j <= p;
+          var shown = p >= 1 || (idx / total) * 0.75 + c.j <= p;
           out += shown || c.ch === " " || c.ch === "\n" ? c.ch : rand(GLYPHS);
         }
         nodes[n].nodeValue = out;
@@ -134,6 +128,254 @@
       window.addEventListener(ev, finish, { once: true, passive: true });
     });
     next();
+  }
+
+  /* ───────────── hero: isometric banner (decode + light sweep) ───────────── */
+  function bannerArt() {
+    var pre = $("#banner");
+    var lines = pre.textContent.replace(/\s+$/, "").split("\n");
+    var H = lines.length;
+    var W = Math.max.apply(null, lines.map(function (l) {
+      return l.length;
+    }));
+    var cells = lines.map(function (l) {
+      return Array.prototype.map.call(l, function (ch) {
+        return { ch: ch, kind: ch === " " ? "" : ch === "\\" ? "f" : "e", j: Math.random() };
+      });
+    });
+
+    // decode: 0..1 progress, sweep: band position in columns (null = off)
+    function render(decode, sweep) {
+      var html = "";
+      for (var y = 0; y < H; y++) {
+        var run = "";
+        var runCls = null;
+        var row = cells[y];
+        for (var x = 0; x < row.length; x++) {
+          var c = row[x];
+          var ch = c.ch;
+          var cls = c.kind === "f" ? "f" : "";
+          if (c.kind && decode < 1 && (x / W) * 0.8 + c.j * 0.2 > decode) {
+            ch = rand(GLYPHS);
+            cls = "g";
+          } else if (c.kind && sweep !== null) {
+            var d = x + (H - y) * 1.6 - sweep;
+            if (d > -2.5 && d < 2.5) cls = "hi";
+          }
+          if (cls !== runCls) {
+            html += runCls ? '<span class="' + runCls + '">' + run + "</span>" : run;
+            run = "";
+            runCls = cls;
+          }
+          run += esc(ch);
+        }
+        html += runCls ? '<span class="' + runCls + '">' + run + "</span>" : run;
+        html += "\n";
+      }
+      pre.innerHTML = html;
+    }
+
+    function sweepOnce() {
+      var start = performance.now();
+      var span = W + H * 1.6 + 6;
+      (function f(now) {
+        var p = (now - start) / 1400;
+        if (p >= 1) return render(1, null);
+        render(1, -3 + p * span);
+        requestAnimationFrame(f);
+      })(start);
+    }
+
+    if (reduced) return render(1, null);
+    render(0, null);
+    return function play() {
+      var start = performance.now();
+      (function f(now) {
+        var p = Math.min(1, (now - start) / 1300);
+        render(p, null);
+        if (p < 1) requestAnimationFrame(f);
+        else {
+          setTimeout(sweepOnce, 300);
+          setInterval(sweepOnce, 7000);
+        }
+      })(start);
+    };
+  }
+
+  /* ───────────── hero: ascii portrait from a photo ───────────── */
+  function portrait() {
+    var fig = $("#portrait");
+    var pre = $("#portrait-art");
+    var src = fig && fig.getAttribute("data-src");
+    if (!src) return;
+
+    var RAMP = " .,:-=+*#%@";
+    var COLS = 72;
+    var CELL = 0.6; // glyph width / line height
+    var rows = 0;
+    var lum = null; // 0..1 brightness per cell
+    var fade = null; // vignette per cell
+    var mouse = null;
+    var glitchRow = -1;
+
+    var img = new Image();
+    img.onload = function () {
+      analyse();
+      fig.hidden = false;
+      $("#hero-inner").classList.add("has-portrait");
+      if (reduced) return draw();
+      develop();
+      bindInteractions();
+    };
+    img.src = src;
+
+    function sig(v) {
+      return 1 / (1 + Math.exp(-7 * (v - 0.5)));
+    }
+
+    function analyse() {
+      rows = Math.round(COLS * (img.naturalHeight / img.naturalWidth) * CELL);
+      var cv = document.createElement("canvas");
+      cv.width = COLS;
+      cv.height = rows;
+      var ctx = cv.getContext("2d", { willReadFrequently: true });
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, COLS, rows);
+      var px = ctx.getImageData(0, 0, COLS, rows).data;
+      var n = COLS * rows;
+      var raw = new Float32Array(n);
+      var alpha = new Float32Array(n);
+      var vals = [];
+      for (var i = 0; i < n; i++) {
+        raw[i] = (0.2126 * px[i * 4] + 0.7152 * px[i * 4 + 1] + 0.0722 * px[i * 4 + 2]) / 255;
+        alpha[i] = px[i * 4 + 3] / 255;
+        if (alpha[i] > 0.5) vals.push(raw[i]);
+      }
+      // auto-levels on the 2nd..98th percentile
+      vals.sort();
+      var lo = vals[(vals.length * 0.02) | 0] || 0;
+      var hi = vals[(vals.length * 0.98) | 0] || 1;
+      lum = new Float32Array(n);
+      fade = new Float32Array(n);
+      for (var y = 0; y < rows; y++) {
+        for (var x = 0; x < COLS; x++) {
+          var k = y * COLS + x;
+          // light unsharp mask for crisper features
+          var sum = 0;
+          var cnt = 0;
+          for (var dy = -1; dy <= 1; dy++)
+            for (var dx = -1; dx <= 1; dx++) {
+              var yy = y + dy;
+              var xx = x + dx;
+              if (yy < 0 || yy >= rows || xx < 0 || xx >= COLS) continue;
+              sum += raw[yy * COLS + xx];
+              cnt++;
+            }
+          var v = raw[k] + 0.7 * (raw[k] - sum / cnt);
+          v = Math.max(0, Math.min(1, (v - lo) / (hi - lo || 1)));
+          // s-curve for punchier midtones
+          lum[k] = (sig(v) - sig(0)) / (sig(1) - sig(0));
+          // soft edges so the image dissolves into the page; transparent pixels = background
+          var ex = Math.min(x, COLS - 1 - x) / (COLS * 0.12);
+          var ey = Math.min(y, rows - 1 - y) / (rows * 0.1);
+          var f = Math.min(1, ex, ey);
+          fade[k] = f * f * (3 - 2 * f) * alpha[k];
+        }
+      }
+    }
+
+    // reveal: 0..1, top-to-bottom develop with per-cell jitter
+    var jitter = null;
+    function draw(reveal) {
+      if (reveal === undefined) reveal = 1;
+      if (!jitter) {
+        jitter = new Float32Array(COLS * rows);
+        for (var j = 0; j < jitter.length; j++) jitter[j] = Math.random();
+      }
+      var html = "";
+      for (var y = 0; y < rows; y++) {
+        var shift = y === glitchRow ? 2 : 0;
+        var run = "";
+        var runCls = "";
+        var lineCls = y === glitchRow ? "glitch" : "";
+        for (var x = 0; x < COLS; x++) {
+          var sx = Math.min(COLS - 1, Math.max(0, x - shift));
+          var k = y * COLS + sx;
+          var dens = lum[k] * fade[k];
+          var ch = RAMP[Math.min(RAMP.length - 1, Math.round(dens * (RAMP.length - 1)))];
+          var cls = lineCls;
+          if (reveal < 1) {
+            var t = (y / rows) * 0.75 + jitter[k] * 0.25;
+            if (t > reveal) ch = " ";
+            else if (t > reveal - 0.08 && ch !== " ") {
+              ch = rand(GLYPHS);
+              cls = "lens";
+            }
+          } else if (mouse) {
+            var mx = (x - mouse.x) * CELL;
+            var my = y - mouse.y;
+            if (mx * mx + my * my < 30) {
+              ch = dens > 0.1 ? (Math.random() < 0.5 ? "0" : "1") : " ";
+              cls = "lens";
+            }
+          }
+          if (cls !== runCls) {
+            html += runCls ? '<span class="' + runCls + '">' + run + "</span>" : run;
+            run = "";
+            runCls = cls;
+          }
+          run += esc(ch);
+        }
+        html += runCls ? '<span class="' + runCls + '">' + run + "</span>" : run;
+        html += "\n";
+      }
+      pre.innerHTML = html;
+    }
+
+    function develop() {
+      var start = performance.now();
+      (function f(now) {
+        var p = Math.min(1.08, (now - start) / 1800);
+        draw(p);
+        if (p < 1.08) requestAnimationFrame(f);
+        else draw();
+      })(start);
+    }
+
+    function bindInteractions() {
+      var pending = false;
+      function queue() {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(function () {
+          pending = false;
+          draw();
+        });
+      }
+      pre.addEventListener("pointermove", function (e) {
+        var r = pre.getBoundingClientRect();
+        mouse = {
+          x: ((e.clientX - r.left) / r.width) * COLS,
+          y: ((e.clientY - r.top) / r.height) * rows,
+        };
+        queue();
+      });
+      pre.addEventListener("pointerleave", function () {
+        mouse = null;
+        queue();
+      });
+
+      // occasional scanline glitch
+      setInterval(function () {
+        if (mouse || document.hidden) return;
+        glitchRow = (Math.random() * rows) | 0;
+        draw();
+        setTimeout(function () {
+          glitchRow = -1;
+          draw();
+        }, 140);
+      }, 4200);
+    }
   }
 
   /* ───────────── hero: typed prompt ───────────── */
@@ -539,8 +781,10 @@
   reveals();
   field();
   pipeline();
+  var playBanner = bannerArt();
   boot(function () {
-    scramble($("#banner"), { duration: 1100, byColumn: true });
+    if (playBanner) playBanner();
+    portrait();
     setTimeout(typed, reduced ? 0 : 500);
   });
 })();

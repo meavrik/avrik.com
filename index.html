@@ -64,24 +64,33 @@
       <!-- ───────────── hero ───────────── -->
       <section class="hero">
         <pre class="field" id="field" aria-hidden="true"></pre>
-        <div class="hero-inner">
-          <pre class="banner" id="banner" aria-label="Avrik">
-    _                   _   _
-   / \   __   __ _ __  (_) | | __
-  / _ \  \ \ / /| '__| | | | |/ /
- / ___ \  \ V / | |    | | |   &lt;
-/_/   \_\  \_/  |_|    |_| |_|\_\</pre>
-          <p class="prompt"><span class="accent">&gt;</span> <span id="typed"></span><span class="cursor">_</span></p>
-          <p class="lede">
-            I build AI systems that ship.<br />
-            And the process that ships them.
-          </p>
-          <p class="tags">
-            <span>[ ai builder ]</span>
-            <span>[ agentic workflows ]</span>
-            <span>[ sdlc improvement ]</span>
-          </p>
-          <a class="scroll-hint" href="#whoami">↓ scroll</a>
+        <div class="hero-inner" id="hero-inner">
+          <div class="hero-text">
+            <pre class="banner" id="banner" aria-label="Avrik">
+ ________  ___      ___ ________  ___  ___  __
+|\   __  \|\  \    /  /|\   __  \|\  \|\  \|\  \
+\ \  \|\  \ \  \  /  / | \  \|\  \ \  \ \  \/  /|_
+ \ \   __  \ \  \/  / / \ \   _  _\ \  \ \   ___  \
+  \ \  \ \  \ \    / /   \ \  \\  \\ \  \ \  \\ \  \
+   \ \__\ \__\ \__/ /     \ \__\\ _\\ \__\ \__\\ \__\
+    \|__|\|__|\|__|/       \|__|\|__|\|__|\|__| \|__|</pre>
+            <p class="prompt"><span class="accent">&gt;</span> <span id="typed"></span><span class="cursor">_</span></p>
+            <p class="lede">
+              I build AI systems that ship.<br />
+              And the process that ships them.
+            </p>
+            <p class="tags">
+              <span>[ ai builder ]</span>
+              <span>[ agentic workflows ]</span>
+              <span>[ sdlc improvement ]</span>
+            </p>
+            <a class="scroll-hint" href="#whoami">↓ scroll</a>
+          </div>
+          <!-- portrait: rendered to ascii at runtime from data-src; hidden if the file is missing -->
+          <figure class="portrait" id="portrait" data-src="assets/portrait.jpg" hidden>
+            <pre id="portrait-art" aria-hidden="true"></pre>
+            <figcaption><span class="dim">fig.01 /</span> avrik, rendered in ascii</figcaption>
+          </figure>
         </div>
       </section>
 
