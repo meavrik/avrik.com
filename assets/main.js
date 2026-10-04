@@ -210,7 +210,7 @@
     if (!src) return;
 
     var RAMP = " .,:-=+*#%@";
-    var COLS = 110;
+    var COLS = 44;
     var FLOOR = 0.14; // min density for opaque pixels, keeps dark clothing/hair as a silhouette
     var CELL = 0.6; // glyph width / line height
     var rows = 0;
@@ -260,8 +260,8 @@
 
       // local-contrast boost (wide unsharp mask, subject pixels only so the
       // silhouette edge doesn't halo) — this is what brings out eyes and mouth
-      var R = 3;
-      var AMOUNT = 1.2;
+      var R = 1;
+      var AMOUNT = 0.9;
       var sharp = new Float32Array(n);
       var vals = [];
       for (var y = 0; y < rows; y++) {
@@ -330,7 +330,7 @@
       }
       var html = "";
       for (var y = 0; y < rows; y++) {
-        var shift = y === glitchRow ? 2 : 0;
+        var shift = y === glitchRow ? 1 : 0;
         var run = "";
         var runCls = "";
         var lineCls = y === glitchRow ? "glitch" : "";
@@ -350,7 +350,7 @@
           } else if (mouse) {
             var mx = (x - mouse.x) * CELL;
             var my = y - mouse.y;
-            if (mx * mx + my * my < 30) {
+            if (mx * mx + my * my < 10) {
               ch = dens > 0.1 ? (Math.random() < 0.5 ? "0" : "1") : " ";
               cls = "lens";
             }

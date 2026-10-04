@@ -298,7 +298,7 @@ h3 {
 }
 
 #portrait-art {
-  font-size: clamp(4.5px, 0.43vw, 6px);
+  font-size: clamp(8px, 1.05vw, 14px);
   line-height: 1;
   letter-spacing: 0;
   cursor: crosshair;
@@ -675,7 +675,7 @@ footer p {
   }
 
   #portrait-art {
-    font-size: clamp(4.5px, 1.3vw, 6px);
+    font-size: clamp(6px, 3.2vw, 12.5px);
   }
 
   .has-portrait .scroll-hint {
