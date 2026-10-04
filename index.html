@@ -26,7 +26,7 @@
     />
     <meta property="og:url" content="https://avrik.com" />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#0b0c0c" />
+    <meta name="theme-color" content="#f4f3ee" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,13 +36,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/style.css" />
-    <script>
-      // Apply saved theme before paint to avoid a flash.
-      try {
-        var t = localStorage.getItem("theme");
-        if (t) document.documentElement.setAttribute("data-theme", t);
-      } catch (e) {}
-    </script>
   </head>
   <body>
     <!-- boot overlay: plays once per session -->
@@ -57,7 +50,6 @@
         <a href="#work"><span class="dim">04</span> work</a>
         <a href="#contact"><span class="dim">05</span> contact</a>
       </nav>
-      <button id="theme" class="theme" type="button" aria-label="Toggle color theme">[ dark ]</button>
     </header>
 
     <main id="top">

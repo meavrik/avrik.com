@@ -69,25 +69,6 @@
     requestAnimationFrame(frame);
   }
 
-  /* ───────────── theme toggle ───────────── */
-  var themeBtn = $("#theme");
-  function currentTheme() {
-    var set = root.getAttribute("data-theme");
-    if (set) return set;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  function paintThemeBtn() {
-    themeBtn.textContent = "[ " + currentTheme() + " ]";
-  }
-  themeBtn.addEventListener("click", function () {
-    var next = currentTheme() === "dark" ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    store("localStorage", "theme", next);
-    paintThemeBtn();
-    scramble(themeBtn, { duration: 300 });
-  });
-  paintThemeBtn();
-
   /* ───────────── boot sequence (once per session) ───────────── */
   function boot(done) {
     var seen = store("sessionStorage", "booted");
@@ -130,7 +111,7 @@
     next();
   }
 
-  /* ───────────── hero: isometric banner (decode + light sweep) ───────────── */
+  /* ───────────── hero: banner (decode on load) ───────────── */
   function bannerArt() {
     var pre = $("#banner");
     var lines = pre.textContent.replace(/\s+$/, "").split("\n");
@@ -144,8 +125,8 @@
       });
     });
 
-    // decode: 0..1 progress, sweep: band position in columns (null = off)
-    function render(decode, sweep) {
+    // decode: 0..1 progress
+    function render(decode) {
       var html = "";
       for (var y = 0; y < H; y++) {
         var run = "";
@@ -158,9 +139,6 @@
           if (c.solid && decode < 1 && (x / W) * 0.8 + c.j * 0.2 > decode) {
             ch = rand(GLYPHS);
             cls = "g";
-          } else if (c.solid && sweep !== null) {
-            var d = x - (H - y) * 1.6 - sweep;
-            if (d > -2.5 && d < 2.5) cls = "hi";
           }
           if (cls !== runCls) {
             html += runCls ? '<span class="' + runCls + '">' + run + "</span>" : run;
@@ -175,30 +153,14 @@
       pre.innerHTML = html;
     }
 
-    function sweepOnce() {
-      var start = performance.now();
-      var span = W + H * 1.6 + 6;
-      var from = -3 - H * 1.6;
-      (function f(now) {
-        var p = (now - start) / 1400;
-        if (p >= 1) return render(1, null);
-        render(1, from + p * span);
-        requestAnimationFrame(f);
-      })(start);
-    }
-
-    if (reduced) return render(1, null);
-    render(0, null);
+    if (reduced) return render(1);
+    render(0);
     return function play() {
       var start = performance.now();
       (function f(now) {
         var p = Math.min(1, (now - start) / 1300);
-        render(p, null);
+        render(p);
         if (p < 1) requestAnimationFrame(f);
-        else {
-          setTimeout(sweepOnce, 300);
-          setInterval(sweepOnce, 7000);
-        }
       })(start);
     };
   }

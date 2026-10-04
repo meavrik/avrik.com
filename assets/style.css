@@ -13,30 +13,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0b0c0c;
-    --fg: #d9dbd3;
-    --dim: #6b6e68;
-    --line: #262826;
-    --accent: #7dffb3;
-    --accent-soft: rgba(125, 255, 179, 0.08);
-    --field: rgba(125, 255, 179, 0.16);
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg: #0b0c0c;
-  --fg: #d9dbd3;
-  --dim: #6b6e68;
-  --line: #262826;
-  --accent: #7dffb3;
-  --accent-soft: rgba(125, 255, 179, 0.08);
-  --field: rgba(125, 255, 179, 0.16);
-  color-scheme: dark;
-}
-
 /* ───────────── base ───────────── */
 *,
 *::before,
@@ -179,21 +155,6 @@ h3 {
   animation: blink 1s steps(1) infinite;
 }
 
-.theme {
-  font: inherit;
-  font-size: 13px;
-  color: var(--dim);
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.theme:hover {
-  color: var(--accent);
-}
-
 /* ───────────── hero ───────────── */
 .hero {
   position: relative;
@@ -240,28 +201,20 @@ h3 {
   font-weight: 600;
 }
 
-/* banner layers: sweep highlight, decode noise */
-.banner .hi {
-  color: var(--accent);
-  opacity: 1;
-  text-shadow: 0 0 8px var(--accent);
-}
-
+/* decode noise while the banner resolves */
 .banner .g {
   color: var(--dim);
   font-weight: 400;
 }
 
 /* ascii portrait */
-/* always a white "print" with black ink, in both themes */
+/* a white "print" with black ink */
 .portrait {
   position: relative;
   margin: 0;
   padding: 16px 16px 10px;
   background: #ffffff;
   color: #111111;
-  --dim: #9a9b95;
-  --accent: #0f7a4a;
   box-shadow: 0 0 0 1px var(--line);
 }
 
@@ -644,10 +597,6 @@ footer p {
 
   .bar nav {
     display: none;
-  }
-
-  .theme {
-    margin-left: auto;
   }
 
   .hero-inner.has-portrait {
