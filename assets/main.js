@@ -210,7 +210,8 @@
     if (!src) return;
 
     var RAMP = " .,:-=+*#%@";
-    var COLS = 72;
+    var COLS = 110;
+    var FLOOR = 0.14; // min density for opaque pixels, keeps dark clothing/hair as a silhouette
     var CELL = 0.6; // glyph width / line height
     var rows = 0;
     var lum = null; // 0..1 brightness per cell
@@ -229,10 +230,6 @@
     };
     img.src = src;
 
-    function sig(v) {
-      return 1 / (1 + Math.exp(-7 * (v - 0.5)));
-    }
-
     function analyse() {
       rows = Math.round(COLS * (img.naturalHeight / img.naturalWidth) * CELL);
       var cv = document.createElement("canvas");
@@ -240,46 +237,85 @@
       cv.height = rows;
       var ctx = cv.getContext("2d", { willReadFrequently: true });
       ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(img, 0, 0, COLS, rows);
+      // halve repeatedly before the final draw: closer to area-averaging than one big bilinear step
+      var step = img;
+      var w = img.naturalWidth;
+      var h = img.naturalHeight;
+      while (w / 2 > COLS * 1.5) {
+        var tmp = document.createElement("canvas");
+        tmp.width = w = Math.round(w / 2);
+        tmp.height = h = Math.round(h / 2);
+        tmp.getContext("2d").drawImage(step, 0, 0, w, h);
+        step = tmp;
+      }
+      ctx.drawImage(step, 0, 0, COLS, rows);
       var px = ctx.getImageData(0, 0, COLS, rows).data;
       var n = COLS * rows;
       var raw = new Float32Array(n);
       var alpha = new Float32Array(n);
-      var vals = [];
       for (var i = 0; i < n; i++) {
         raw[i] = (0.2126 * px[i * 4] + 0.7152 * px[i * 4 + 1] + 0.0722 * px[i * 4 + 2]) / 255;
         alpha[i] = px[i * 4 + 3] / 255;
-        if (alpha[i] > 0.5) vals.push(raw[i]);
       }
-      // auto-levels on the 2nd..98th percentile
-      vals.sort();
-      var lo = vals[(vals.length * 0.02) | 0] || 0;
-      var hi = vals[(vals.length * 0.98) | 0] || 1;
-      lum = new Float32Array(n);
-      fade = new Float32Array(n);
+
+      // local-contrast boost (wide unsharp mask, subject pixels only so the
+      // silhouette edge doesn't halo) — this is what brings out eyes and mouth
+      var R = 3;
+      var AMOUNT = 1.2;
+      var sharp = new Float32Array(n);
+      var vals = [];
       for (var y = 0; y < rows; y++) {
         for (var x = 0; x < COLS; x++) {
           var k = y * COLS + x;
-          // light unsharp mask for crisper features
           var sum = 0;
           var cnt = 0;
-          for (var dy = -1; dy <= 1; dy++)
-            for (var dx = -1; dx <= 1; dx++) {
+          for (var dy = -R; dy <= R; dy++)
+            for (var dx = -R; dx <= R; dx++) {
               var yy = y + dy;
               var xx = x + dx;
               if (yy < 0 || yy >= rows || xx < 0 || xx >= COLS) continue;
-              sum += raw[yy * COLS + xx];
+              var kk = yy * COLS + xx;
+              if (alpha[kk] <= 0.5) continue;
+              sum += raw[kk];
               cnt++;
             }
-          var v = raw[k] + 0.7 * (raw[k] - sum / cnt);
-          v = Math.max(0, Math.min(1, (v - lo) / (hi - lo || 1)));
-          // s-curve for punchier midtones
-          lum[k] = (sig(v) - sig(0)) / (sig(1) - sig(0));
+          var mean = cnt ? sum / cnt : raw[k];
+          sharp[k] = raw[k] + AMOUNT * (raw[k] - mean);
+          if (alpha[k] > 0.5) vals.push(sharp[k]);
+        }
+      }
+
+      // tone map over subject pixels only: histogram equalization blended with
+      // linear 2..98% levels, so faces keep detail even next to dark clothing
+      vals.sort(function (a, b) {
+        return a - b;
+      });
+      var m = vals.length;
+      var lo = vals[(m * 0.02) | 0] || 0;
+      var hi = vals[(m * 0.98) | 0] || 1;
+      function rank(v) {
+        var a = 0;
+        var b = m;
+        while (a < b) {
+          var mid = (a + b) >> 1;
+          if (vals[mid] < v) a = mid + 1;
+          else b = mid;
+        }
+        return m ? a / m : v;
+      }
+
+      lum = new Float32Array(n);
+      fade = new Float32Array(n);
+      for (var y2 = 0; y2 < rows; y2++) {
+        for (var x2 = 0; x2 < COLS; x2++) {
+          var k2 = y2 * COLS + x2;
+          var linear = Math.max(0, Math.min(1, (sharp[k2] - lo) / (hi - lo || 1)));
+          lum[k2] = 0.7 * rank(sharp[k2]) + 0.3 * linear;
           // soft edges so the image dissolves into the page; transparent pixels = background
-          var ex = Math.min(x, COLS - 1 - x) / (COLS * 0.12);
-          var ey = Math.min(y, rows - 1 - y) / (rows * 0.1);
+          var ex = Math.min(x2, COLS - 1 - x2) / (COLS * 0.12);
+          var ey = Math.min(y2, rows - 1 - y2) / (rows * 0.1);
           var f = Math.min(1, ex, ey);
-          fade[k] = f * f * (3 - 2 * f) * alpha[k];
+          fade[k2] = f * f * (3 - 2 * f) * alpha[k2];
         }
       }
     }
@@ -301,7 +337,7 @@
         for (var x = 0; x < COLS; x++) {
           var sx = Math.min(COLS - 1, Math.max(0, x - shift));
           var k = y * COLS + sx;
-          var dens = lum[k] * fade[k];
+          var dens = (FLOOR + (1 - FLOOR) * lum[k]) * fade[k];
           var ch = RAMP[Math.min(RAMP.length - 1, Math.round(dens * (RAMP.length - 1)))];
           var cls = lineCls;
           if (reveal < 1) {

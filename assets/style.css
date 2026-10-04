@@ -298,7 +298,7 @@ h3 {
 }
 
 #portrait-art {
-  font-size: clamp(5px, 0.62vw, 7.5px);
+  font-size: clamp(4.5px, 0.43vw, 6px);
   line-height: 1;
   letter-spacing: 0;
   cursor: crosshair;
@@ -320,7 +320,11 @@ h3 {
 }
 
 .has-portrait .lede {
-  font-size: clamp(20px, 2.5vw, 30px);
+  font-size: clamp(18px, 1.75vw, 26px);
+}
+
+.lede span {
+  display: inline-block;
 }
 
 .prompt {
@@ -671,7 +675,7 @@ footer p {
   }
 
   #portrait-art {
-    font-size: clamp(5px, 1.75vw, 7.5px);
+    font-size: clamp(4.5px, 1.3vw, 6px);
   }
 
   .has-portrait .scroll-hint {
