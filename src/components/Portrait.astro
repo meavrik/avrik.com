@@ -1,0 +1,610 @@
+---
+// A cartoon of me, drawn in CSS: flat shapes, ink outlines, the site's palette. Everything
+// is sized in em on a 20 × 22.4em canvas, so --me-size (the font-size) scales the whole drawing.
+// The bird from the clouds nests in the hair. Hover: it pops up and peeps, one eyebrow goes up.
+// The eyes follow the pointer (the script at the bottom).
+import { site } from "../data/site";
+const { portrait } = site.bio;
+
+// the curly top: circles along the crown, [x, y, r] in canvas em. One outline goes round them all.
+const curls = [
+  [7.05, 3.0, 0.9],
+  [8.45, 2.15, 1],
+  [10, 1.8, 1],
+  [11.55, 2.15, 1],
+  [12.95, 3.0, 0.9],
+];
+// little ink kinks in the hair, [x, y, rotation]
+const kinks = [
+  [7.3, 3.3, -35],
+  [9, 2.75, 10],
+  [11, 2.7, -10],
+  [12.6, 3.25, 30],
+];
+const style = (o: Record<string, string | number>) =>
+  Object.entries(o)
+    .map(([k, v]) => `${k}:${v}`)
+    .join(";");
+---
+
+<figure class="me" role="img" aria-label={portrait.alt}>
+  <div class="disc">
+    <span class="neck"></span>
+    <span class="shirt">
+      <span class="seam l"></span>
+      <span class="seam r"></span>
+      <span class="band"></span>
+      <span class="collar"></span>
+    </span>
+  </div>
+  <span class="spark a">✦</span>
+  <span class="spark b">✦</span>
+
+  <div class="noggin">
+    <span class="ear l"></span>
+    <span class="ear r"></span>
+    <div class="head">
+      <span class="fade"></span>
+      <span class="beard"></span>
+      <span class="brow l"></span>
+      <span class="brow r"></span>
+      <span class="eye l"><i></i></span>
+      <span class="eye r"><i></i></span>
+      <span class="nose"></span>
+      <span class="mouth"></span>
+    </div>
+
+    <!-- the bird sits behind the hair, so only its head pokes out of the curls -->
+    <div class="bird">
+      <span class="tuft"></span>
+      <span class="cheek l"></span>
+      <span class="cheek r"></span>
+      <span class="b-eye l"><i></i></span>
+      <span class="b-eye r"><i></i></span>
+      <span class="beak-lo"></span>
+      <span class="beak-up"></span>
+    </div>
+    <span class="says display">{site.birdSays[0]}</span>
+
+    <div class="hair">
+      <span class="cap"></span>
+      {curls.map(([x, y, r]) => <span class="curl" style={style({ "--x": x, "--y": y, "--r": r })} />)}
+    </div>
+    <div class="kinks">
+      {kinks.map(([x, y, a]) => <span style={style({ "--x": x, "--y": y, "--a": `${a}deg` })} />)}
+    </div>
+  </div>
+
+  <span class="tag">{portrait.sticker}</span>
+</figure>
+
+<style>
+  .me {
+    --skin: #edb48e;
+    --skin-2: #d9946b;
+    --hair: #6b4630;
+    --stubble: #a06e51;
+    --stubble-dot: #4f3324;
+    --shirt: #3a393e;
+    --iris: #6d8db0;
+    --white: #fffaf0;
+    --line: var(--bw);
+    position: relative;
+    margin: 0;
+    width: 20em;
+    height: 22.4em;
+    font-size: var(--me-size, 11px);
+  }
+  .me span,
+  .me div,
+  .me i {
+    position: absolute;
+    display: block;
+  }
+
+  /* ── the disc: sky, halftone dots, shirt cut off by its edge ── */
+  .disc {
+    left: 1em;
+    top: 4.4em;
+    width: 18em;
+    height: 18em;
+    border: var(--line) solid var(--ink);
+    border-radius: 50%;
+    overflow: hidden;
+    background:
+      radial-gradient(circle, color-mix(in oklab, var(--sky), var(--ink) 14%) 0.11em, transparent 0.13em) 0 0 / 0.8em
+        0.8em,
+      var(--sky);
+  }
+  /* disc coordinates from here: canvas minus (1em, 4.4em) */
+  .neck {
+    left: 7em;
+    top: 6.6em;
+    width: 4em;
+    height: 5em;
+    background: var(--skin);
+    border-inline: var(--line) solid var(--ink);
+    overflow: hidden;
+  }
+  /* the chin's shadow on the neck */
+  .neck::after {
+    content: "";
+    position: absolute;
+    left: -30%;
+    right: -30%;
+    top: -1.1em;
+    height: 2.2em;
+    border-radius: 50%;
+    background: var(--skin-2);
+  }
+  .shirt {
+    left: 1.4em;
+    top: 9.9em;
+    width: 15.2em;
+    height: 9em;
+    background: var(--shirt);
+    border: var(--line) solid var(--ink);
+    border-radius: 6em 6em 0 0 / 3.4em 3.4em 0 0;
+  }
+  /* a crew-neck T-shirt: a shallow round neck with a ribbed band, sleeve seams at the shoulders */
+  .collar {
+    left: calc(50% - 2em);
+    top: calc(-1 * var(--line));
+    width: 4em;
+    height: 1.2em;
+    background: var(--skin);
+    border: var(--line) solid var(--ink);
+    border-top: 0;
+    border-radius: 0 0 2em 2em / 0 0 1.2em 1.2em;
+  }
+  .band {
+    left: calc(50% - 2.45em);
+    top: 0;
+    width: 4.9em;
+    height: 1.55em;
+    background: #48474d;
+    border: 2px solid var(--ink);
+    border-top: 0;
+    border-radius: 0 0 2.45em 2.45em / 0 0 1.55em 1.55em;
+  }
+  .seam {
+    top: 0.5em;
+    width: 2.5em;
+    height: 7em;
+    border: 2px solid transparent;
+    border-radius: 50%;
+  }
+  .seam.l {
+    left: 2.2em;
+    border-left-color: var(--ink);
+  }
+  .seam.r {
+    right: 2.2em;
+    border-right-color: var(--ink);
+  }
+
+  .spark {
+    font-size: 2.6em;
+    line-height: 1;
+    color: var(--yellow);
+    -webkit-text-stroke: 1.5px var(--ink);
+  }
+  .spark.a {
+    left: 0.1em;
+    top: 2.6em;
+  }
+  .spark.b {
+    font-size: 1.6em;
+    left: 10.6em;
+    top: 4.6em;
+  }
+
+  /* ── the head: ears, face, hair and the bird tilt together ── */
+  .noggin {
+    inset: 0;
+    transform-origin: 10em 13em;
+    transition: rotate var(--base) var(--ease);
+  }
+  .ear {
+    top: 7.3em;
+    width: 1.7em;
+    height: 2.7em;
+    background: var(--skin);
+    border: var(--line) solid var(--ink);
+    border-radius: 60% 40% 40% 60% / 55% 50% 50% 45%;
+  }
+  .ear.l {
+    left: 4.85em;
+  }
+  .ear.r {
+    left: 13.45em;
+    scale: -1 1;
+  }
+  .ear::after {
+    content: "";
+    position: absolute;
+    left: 0.35em;
+    top: 0.5em;
+    width: 0.8em;
+    height: 1.3em;
+    border: 2px solid transparent;
+    border-left-color: var(--ink);
+    border-radius: 50%;
+  }
+
+  .head {
+    left: 5.7em;
+    top: 3em;
+    width: 8.6em;
+    height: 10.6em;
+    background: var(--skin);
+    border: var(--line) solid var(--ink);
+    border-radius: 47% 47% 45% 45% / 40% 40% 60% 60%;
+    overflow: hidden;
+  }
+  /* head coordinates from here: its padding box, centred with calc(50% ± …) */
+  .beard {
+    inset: 0;
+    background:
+      radial-gradient(circle, var(--stubble-dot) 0.06em, transparent 0.09em) 0 0 / 0.36em 0.36em,
+      radial-gradient(circle, var(--stubble-dot) 0.05em, transparent 0.08em) 0.18em 0.2em / 0.36em 0.36em,
+      var(--stubble);
+    clip-path: polygon(
+      calc(50% - 4.4em) 4.7em,
+      calc(50% - 3.7em) 5.8em,
+      calc(50% - 3em) 6.55em,
+      calc(50% - 2.2em) 7.05em,
+      calc(50% - 1.6em) 7em,
+      calc(50% - 1em) 6.7em,
+      50% 6.55em,
+      calc(50% + 1em) 6.7em,
+      calc(50% + 1.6em) 7em,
+      calc(50% + 2.2em) 7.05em,
+      calc(50% + 3em) 6.55em,
+      calc(50% + 3.7em) 5.8em,
+      calc(50% + 4.4em) 4.7em,
+      calc(50% + 4.4em) 11em,
+      calc(50% - 4.4em) 11em
+    );
+  }
+  /* buzzed sides: a fine dotted fade from the hair down to the beard, one strip per side */
+  .fade {
+    inset: 0;
+  }
+  .fade::before,
+  .fade::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle, var(--hair) 0.055em, transparent 0.085em) 0 0 / 0.3em 0.3em,
+      color-mix(in oklab, var(--skin), var(--hair) 16%);
+    clip-path: polygon(0 1.4em, 0.6em 1.8em, 0.8em 2.8em, 0.72em 3.8em, 0.5em 4.9em, 0 5.1em);
+  }
+  .fade::after {
+    clip-path: polygon(
+      100% 1.4em,
+      calc(100% - 0.6em) 1.8em,
+      calc(100% - 0.8em) 2.8em,
+      calc(100% - 0.72em) 3.8em,
+      calc(100% - 0.5em) 4.9em,
+      100% 5.1em
+    );
+  }
+  .brow {
+    top: 2.3em;
+    width: 2.1em;
+    height: 0.55em;
+    background: #4e3222;
+    border-radius: 1em 1em 0.3em 0.3em / 0.6em 0.6em 0.2em 0.2em;
+    transition: translate var(--base) var(--ease);
+  }
+  .brow.l {
+    left: calc(50% - 3em);
+    rotate: -7deg;
+  }
+  .brow.r {
+    left: calc(50% + 0.9em);
+    rotate: 7deg;
+  }
+
+  .eye {
+    top: 3.2em;
+    width: 2.2em;
+    height: 1.85em;
+    background: var(--white);
+    border: var(--line) solid var(--ink);
+    border-top-width: calc(var(--line) + 1px);
+    border-radius: 50% / 55% 55% 45% 45%;
+    overflow: hidden;
+    animation: blink 5.5s infinite;
+  }
+  .eye.l {
+    left: calc(50% - 3.05em);
+  }
+  .eye.r {
+    left: calc(50% + 0.85em);
+  }
+  /* iris, pupil and a glint; --lx / --ly (-1…1) come from the script */
+  .eye i {
+    left: calc(50% - 0.62em);
+    top: calc(50% - 0.62em);
+    width: 1.24em;
+    height: 1.24em;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 34% 32%, var(--white) 0.13em, transparent 0.15em),
+      radial-gradient(circle, var(--ink) 0.3em, transparent 0.32em),
+      var(--iris);
+    translate: calc(var(--lx, 0) * 0.42em) calc(var(--ly, 0) * 0.28em);
+    transition: translate 120ms linear;
+  }
+  @keyframes blink {
+    0%,
+    93%,
+    100% {
+      scale: 1 1;
+    }
+    95.5% {
+      scale: 1 0.1;
+    }
+  }
+
+  /* a round tip with the bridge drawn up one side */
+  .nose {
+    left: calc(50% - 0.7em);
+    top: 4.9em;
+    width: 1.4em;
+    height: 1.65em;
+    border: var(--line) solid transparent;
+    border-right-color: var(--ink);
+    border-bottom-color: var(--ink);
+    border-radius: 0 0 0.7em 0.6em / 0 0 0.8em 0.6em;
+  }
+
+  /* a hint of a smile, a touch higher on one side */
+  .mouth {
+    left: calc(50% - 1.1em);
+    top: 7.4em;
+    width: 2.2em;
+    height: 0.22em;
+    border-bottom: var(--line) solid var(--ink);
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    rotate: -2deg;
+  }
+
+  /* ── hair: one outline round the union of cap and curls ── */
+  .hair {
+    inset: 0;
+    filter: drop-shadow(var(--line) 0 0 var(--ink)) drop-shadow(calc(-1 * var(--line)) 0 0 var(--ink))
+      drop-shadow(0 var(--line) 0 var(--ink)) drop-shadow(0 calc(-1 * var(--line)) 0 var(--ink));
+  }
+  /* curls on top, receding temples; the sides are clipped short (.fade, on the head) */
+  .cap {
+    inset: 0;
+    background: var(--hair);
+    clip-path: polygon(
+      6.4em 5.1em,
+      6.2em 4.4em,
+      6.45em 3.5em,
+      7.2em 2.7em,
+      8.5em 2.1em,
+      10em 1.9em,
+      11.5em 2.1em,
+      12.8em 2.7em,
+      13.55em 3.5em,
+      13.8em 4.4em,
+      13.6em 5.1em,
+      13.15em 4.3em,
+      12.6em 3.6em,
+      11.8em 3.85em,
+      11em 4.05em,
+      10em 4.1em,
+      9em 4.05em,
+      8.2em 3.85em,
+      7.4em 3.6em,
+      6.85em 4.3em
+    );
+  }
+  .curl {
+    left: calc((var(--x) - var(--r)) * 1em);
+    top: calc((var(--y) - var(--r)) * 1em);
+    width: calc(var(--r) * 2em);
+    height: calc(var(--r) * 2em);
+    border-radius: 50%;
+    background: var(--hair);
+  }
+  .kinks {
+    inset: 0;
+  }
+  .kinks span {
+    left: calc(var(--x) * 1em - 0.45em);
+    top: calc(var(--y) * 1em - 0.35em);
+    width: 0.9em;
+    height: 0.7em;
+    border: 2px solid transparent;
+    border-top-color: var(--ink);
+    border-radius: 50%;
+    rotate: var(--a);
+  }
+
+  /* ── the bird: the one from the clouds, a little smaller ── */
+  .bird {
+    left: 9.9em;
+    top: -1em;
+    width: 2.6em;
+    height: 4.2em;
+    background: var(--yellow);
+    border: var(--line) solid var(--ink);
+    border-radius: 1.3em 1.3em 0.65em 0.65em;
+    transition: translate var(--base) var(--ease);
+  }
+  .b-eye {
+    top: -0.6em;
+    left: 0.1em;
+    width: 1.05em;
+    height: 1.05em;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+  }
+  .b-eye.r {
+    top: -0.48em;
+    left: 1.15em;
+    width: 0.98em;
+    height: 0.98em;
+  }
+  .b-eye i {
+    left: calc(50% - 0.2em);
+    top: calc(50% - 0.2em);
+    width: 0.4em;
+    height: 0.4em;
+    border-radius: 50%;
+    background: var(--ink);
+    translate: 0.1em 0.06em;
+  }
+  .b-eye.r i {
+    translate: -0.12em 0.06em;
+    scale: 0.85;
+  }
+  .beak-up,
+  .beak-lo {
+    background: var(--orange);
+    border: 2px solid var(--ink);
+  }
+  .beak-up {
+    left: 0.75em;
+    top: 0.58em;
+    width: 0.75em;
+    height: 0.55em;
+    border-radius: 0.2em 0.2em 50% 50% / 0.2em 0.2em 100% 100%;
+  }
+  .beak-lo {
+    left: 0.9em;
+    top: 0.86em;
+    width: 0.45em;
+    height: 0.4em;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    transition: translate var(--fast);
+  }
+  .cheek {
+    top: 0.8em;
+    width: 0.46em;
+    height: 0.26em;
+    background: var(--pink);
+    border-radius: 50%;
+  }
+  .cheek.l {
+    left: 0.12em;
+  }
+  .cheek.r {
+    right: 0.12em;
+  }
+  .tuft {
+    left: 50%;
+    top: -1.45em;
+  }
+  .tuft::before,
+  .tuft::after {
+    content: "";
+    position: absolute;
+    width: 0.6em;
+    height: 0.85em;
+    border: 2.5px solid transparent;
+    border-left-color: var(--ink);
+    border-radius: 50%;
+  }
+  .tuft::before {
+    left: -0.4em;
+    rotate: 20deg;
+  }
+  .tuft::after {
+    left: -0.05em;
+    top: 0.12em;
+    rotate: -15deg;
+  }
+  .says {
+    left: 12.7em;
+    top: -2.4em;
+    padding: 3px 9px 2px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: var(--pill);
+    rotate: -6deg;
+    scale: 0;
+    transform-origin: 0 100%;
+    transition: scale var(--fast) var(--ease);
+  }
+
+  .tag {
+    left: auto;
+    right: -1.4em;
+    bottom: 0.9em;
+    background: var(--yellow);
+    --tilt: -7deg;
+  }
+
+  /* ── hover: tilt, raise an eyebrow, the bird pops up and peeps ── */
+  @media (hover: hover) {
+    .me:hover .noggin {
+      rotate: -4deg;
+    }
+    .me:hover .brow.r {
+      translate: 0 -0.5em;
+    }
+    .me:hover .bird {
+      translate: 0 -1.3em;
+    }
+    .me:hover .beak-lo {
+      translate: 0 0.15em;
+    }
+    .me:hover .says {
+      scale: 1;
+      transition-delay: 120ms;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eye {
+      animation: none;
+    }
+    .noggin,
+    .brow,
+    .bird,
+    .beak-lo,
+    .says,
+    .eye i {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // the eyes follow the pointer: fine pointers only, never with reduced motion
+  const me = document.querySelector<HTMLElement>(".me");
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (me && fine && !reduced) {
+    const head = me.querySelector<HTMLElement>(".head")!;
+    let raf = 0;
+    addEventListener(
+      "pointermove",
+      (ev) => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const r = head.getBoundingClientRect();
+          if (r.bottom < 0 || r.top > innerHeight) return;
+          const dx = ev.clientX - (r.left + r.width / 2);
+          const dy = ev.clientY - (r.top + r.height * 0.37);
+          const d = Math.hypot(dx, dy) || 1;
+          const k = Math.min(1, d / 160); // full glance beyond ~160px, softer up close
+          me.style.setProperty("--lx", ((dx / d) * k).toFixed(3));
+          me.style.setProperty("--ly", ((dy / d) * k).toFixed(3));
+        });
+      },
+      { passive: true },
+    );
+  }
+</script>

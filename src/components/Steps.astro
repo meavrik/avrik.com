@@ -1,0 +1,96 @@
+---
+import { site } from "../data/site";
+import Icon from "./Icon.astro";
+const badge = ["orange", "pink", "teal"];
+---
+
+<section class="section wrap" id="how">
+  <h2 class="section-title reveal">Three steps. Stop after any.</h2>
+  <ol class="steps">
+    {
+      site.steps.map((s, i) => (
+        <li class="step reveal" style={`--i:${i};--badge:var(--${badge[i]})`}>
+          <div class="card box press">
+            <span class="n display">{i + 1}</span>
+            <Icon name={s.icon} size={56} />
+            <h3>{s.title}</h3>
+            <p>{s.line}</p>
+          </div>
+          {i < site.steps.length - 1 && (
+            <span class="joint" aria-hidden="true">
+              <Icon name="arrow" size={36} />
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 3vw, 40px);
+  }
+  .step {
+    position: relative;
+  }
+  .card {
+    position: relative;
+    padding: clamp(24px, 3vw, 36px);
+    display: grid;
+    gap: 16px;
+    height: 100%;
+    align-content: start;
+  }
+  .step:nth-child(2) .card {
+    background: var(--yellow);
+  }
+  .n {
+    position: absolute;
+    top: -18px;
+    right: 20px;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    font-size: 1.1rem;
+    background: var(--badge);
+    border-radius: var(--pill);
+    border: var(--bw) solid var(--ink);
+  }
+  h3 {
+    font-size: var(--step-3);
+  }
+  p {
+    font-size: var(--step-0);
+    max-width: 26ch;
+  }
+  .joint {
+    position: absolute;
+    top: 50%;
+    right: calc(-1 * clamp(16px, 3vw, 40px) / 2 - 18px);
+    transform: translateY(-50%);
+    z-index: 1;
+    background: var(--bg, var(--paper));
+    border-radius: var(--pill);
+    padding: 2px;
+  }
+  @media (max-width: 760px) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .joint {
+      top: auto;
+      bottom: -40px;
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%) rotate(90deg);
+    }
+  }
+</style>

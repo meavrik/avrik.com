@@ -1,0 +1,362 @@
+---
+import { site } from "../data/site";
+import Icon from "./Icon.astro";
+import Roadmap from "./Roadmap.astro";
+// 16-point starburst for the "ship it!" sticker
+const burst = Array.from({ length: 32 }, (_, i) => {
+  const r = i % 2 ? 46 : 58;
+  const a = (i * Math.PI) / 16;
+  return `${(60 + r * Math.cos(a)).toFixed(1)},${(60 + r * Math.sin(a)).toFixed(1)}`;
+}).join(" ");
+const [dev, biz] = site.lanes;
+const { cta } = site.roadmap;
+---
+
+<section class="section wrap" id="who">
+  <h2 class="section-title reveal">{site.lanesTitle}</h2>
+  <div class="lanes">
+    <!-- dev: wide pink panel with the process illustration -->
+    <article class="lane dev box reveal" data-lane={dev.id} style="--i:0">
+      <div class="text">
+        <span class="label">01 — {dev.title}</span>
+        <h3>{dev.line}</h3>
+        <ul class="tags">
+          {dev.tags.map((t, j) => (
+            <li class="tag" style={`--tilt:${(j % 2 ? 1 : -1) * (1 + j)}deg`}>{t}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="art" data-tilt>
+        <svg class="sticker in" viewBox="0 0 420 300" aria-hidden="true">
+          <g class="rail">
+            <rect x="24" y="110" width="100" height="80" rx="12" />
+            <rect x="296" y="110" width="100" height="80" rx="12" />
+            <path d="M124 150h40" />
+            <path d="M256 150h40" />
+            <path d="M154 140l10 10-10 10M286 140l10 10-10 10" />
+            <path d="M44 138h60M44 152h40M44 166h50" class="lines" />
+            <path d="M316 138h60M316 152h40M316 166h50" class="lines" />
+          </g>
+          <g class="plug">
+            <rect x="164" y="98" width="92" height="104" rx="14" class="plug-box" />
+            <path
+              d="M210 118c2 14 10 22 24 24-14 2-22 10-24 24-2-14-10-22-24-24 14-2 22-10 24-24z"
+              class="spark"
+            />
+            <circle cx="236" cy="112" r="4" class="dot" />
+            <circle cx="184" cy="188" r="3" class="dot" />
+          </g>
+          <g class="wire">
+            <path d="M210 98V60" />
+            <path d="M210 60c0-18 14-28 30-28h40" />
+            <circle cx="286" cy="32" r="8" />
+          </g>
+        </svg>
+        <svg class="burst" viewBox="0 0 120 120" aria-hidden="true">
+          <polygon points={burst} />
+          <text x="60" y="66" text-anchor="middle">{dev.sticker}</text>
+        </svg>
+      </div>
+
+      <button
+        class="cta"
+        type="button"
+        data-roadmap-open={dev.id}
+        data-label-show={cta.show}
+        data-label-hide={cta.hide}
+        aria-controls="roadmap"
+        aria-expanded="false"
+      >
+        <span class="cta-label display">{cta.show}</span>
+        <span class="cta-arrow" aria-hidden="true">
+          <Icon name="arrow" size={20} class="in" />
+        </span>
+      </button>
+    </article>
+
+    <!-- biz: orange panel with a speech-bubble sticker -->
+    <article class="lane biz box reveal" data-lane={biz.id} style="--i:1">
+      <svg class="bubble" viewBox="0 0 130 100" aria-hidden="true">
+        <path
+          d="M16 6h98a10 10 0 0 1 10 10v44a10 10 0 0 1-10 10H60L40 90V70H16A10 10 0 0 1 6 60V16A10 10 0 0 1 16 6z"
+        />
+        <text x="65" y="46" text-anchor="middle">{biz.sticker}</text>
+      </svg>
+      <div class="mark">
+        <Icon name={biz.icon} size={44} />
+      </div>
+      <span class="label">02 — {biz.title}</span>
+      <h3>{biz.line}</h3>
+      <ul class="tags">
+        {biz.tags.map((t, j) => (
+          <li class="tag" style={`--tilt:${(j % 2 ? 1 : -1) * (1 + j)}deg`}>{t}</li>
+        ))}
+      </ul>
+
+      <button
+        class="cta"
+        type="button"
+        data-roadmap-open={biz.id}
+        data-label-show={cta.show}
+        data-label-hide={cta.hide}
+        aria-controls="roadmap"
+        aria-expanded="false"
+      >
+        <span class="cta-label display">{cta.show}</span>
+        <span class="cta-arrow" aria-hidden="true">
+          <Icon name="arrow" size={20} class="in" />
+        </span>
+      </button>
+    </article>
+  </div>
+
+  <Roadmap />
+</section>
+
+<style>
+  .lanes {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+    gap: clamp(16px, 2.5vw, 28px);
+  }
+  .lane {
+    position: relative;
+    padding: clamp(24px, 3vw, 40px);
+    background: var(--lane);
+    border-radius: var(--r-lg);
+  }
+  .dev {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 46%);
+    gap: 24px;
+    align-items: center;
+  }
+  .text,
+  .biz {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    justify-items: start;
+  }
+  h3 {
+    font-size: var(--step-3);
+    max-width: 16ch;
+  }
+  .tags {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 8px;
+  }
+  /* the call to action: a lifted yellow pill, the one thing with a shadow */
+  .cta {
+    grid-column: 1 / -1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 10px;
+    padding: 10px 10px 10px 22px;
+    font: inherit;
+    color: inherit;
+    background: var(--yellow);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+    box-shadow: var(--lift);
+    cursor: pointer;
+    transition:
+      transform var(--fast) var(--ease-out),
+      box-shadow var(--fast) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .cta:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+  }
+  .cta:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .cta-label {
+    font-size: 1rem;
+  }
+  .cta-arrow {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    border-radius: var(--pill);
+    animation: bob 1.6s ease-in-out infinite;
+  }
+  .cta-arrow :global(.ico) {
+    stroke: var(--paper-2);
+    stroke-width: 4;
+    rotate: 90deg;
+    transition: rotate var(--base) var(--ease);
+  }
+  .cta[aria-expanded="true"] .cta-arrow {
+    animation: none;
+  }
+  .cta[aria-expanded="true"] .cta-arrow :global(.ico) {
+    rotate: -90deg;
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(3px);
+    }
+  }
+  .mark {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+    margin-bottom: 6px;
+  }
+
+  /* the illustration: flat, outlined, tilts with the cursor */
+  .art {
+    position: relative;
+    perspective: 900px;
+  }
+  .sticker {
+    width: 100%;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 120ms linear;
+    will-change: transform;
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .rail rect {
+    fill: var(--paper-2);
+  }
+  .lines {
+    stroke-width: 3;
+    opacity: 0.35;
+  }
+  .plug-box {
+    fill: var(--yellow);
+    transform-origin: 210px 150px;
+    animation: slot 1.1s var(--ease) both;
+    animation-delay: 300ms;
+  }
+  .spark {
+    fill: var(--ink);
+    stroke: none;
+    transform-origin: 210px 142px;
+    animation: pop 600ms var(--ease) both;
+    animation-delay: 900ms;
+  }
+  .dot {
+    fill: var(--ink);
+    stroke: none;
+  }
+  .wire {
+    stroke-width: 3;
+    stroke-dasharray: 6 8;
+  }
+  .wire circle {
+    fill: var(--teal);
+    stroke-dasharray: none;
+  }
+  @keyframes slot {
+    from {
+      transform: translateY(-60px) rotate(-8deg);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0) rotate(-60deg);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  /* stickers */
+  .burst,
+  .bubble {
+    position: absolute;
+    z-index: 2;
+    font-family: var(--display);
+    font-weight: 900;
+    font-stretch: 112%;
+    text-transform: uppercase;
+  }
+  .burst {
+    width: 118px;
+    top: -28px;
+    left: -18px;
+    transform: rotate(-12deg);
+  }
+  .burst polygon {
+    fill: var(--blue);
+    stroke: var(--ink);
+    stroke-width: 3;
+    stroke-linejoin: round;
+  }
+  .burst text {
+    font-size: 15px;
+    fill: var(--ink);
+  }
+  .bubble {
+    width: 124px;
+    top: -30px;
+    right: 18px;
+    transform: rotate(6deg);
+  }
+  .bubble path {
+    fill: var(--paper-2);
+    stroke: var(--ink);
+    stroke-width: 3;
+    stroke-linejoin: round;
+  }
+  .bubble text {
+    font-size: 20px;
+    fill: var(--ink);
+  }
+
+  @media (max-width: 920px) {
+    .lanes {
+      grid-template-columns: 1fr;
+    }
+    .dev {
+      grid-template-columns: 1fr;
+    }
+    .art {
+      max-width: 420px;
+      margin-top: 12px;
+    }
+    .burst {
+      left: -8px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plug-box,
+    .spark,
+    .cta-arrow {
+      animation: none;
+    }
+    .cta {
+      transition: none;
+    }
+    .sticker {
+      transition: none;
+    }
+  }
+</style>

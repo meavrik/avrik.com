@@ -1,0 +1,61 @@
+:root {
+  /* colour — warm retro-comic palette on cream paper */
+  --ink: #161616;
+  --paper: #f4e4c1;
+  --paper-2: #fbf1d9;
+  --orange: #ec6a2b;
+  --pink: #f48db8;
+  --yellow: #f5c243;
+  --teal: #3aa08f;
+  --green: #4aa66c;
+  --blue: #6b95d8;
+  --sky: #9bcbe8;
+
+  /* background tint per section (keyed by the section's id). the frame fades from
+     one to the next through a drift of clouds as you scroll between sections. */
+  --bg-top: var(--paper);
+  --bg-who: #cfe1ef;
+  --bg-what: #f6e7b0;
+  --bg-how: #efd6e2;
+  --bg-bio: #f5dcc8;
+  --bg-talk: #cde6dc;
+  --bg-lab: #f6e7b0;
+
+  /* line + corners: flat outlines, soft radius, no drop shadows */
+  --bw: 2.5px;
+  --r: 18px;
+  --r-lg: 28px;
+  --pill: 999px;
+  --lift: 4px 4px 0 var(--ink);
+
+  /* type */
+  --display: "Archivo", "Archivo Black", "Arial Black", sans-serif;
+  --body: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+
+  --step-7: clamp(3rem, 8.5vw, 8rem);
+  --step-hero: clamp(2.5rem, 5.6vw, 5rem); /* sized so the widest rotating headline line fits its column */
+  --step-5: clamp(2rem, 5vw, 4rem);
+  --step-3: clamp(1.4rem, 2.6vw, 2.1rem);
+  --step-1: clamp(1.05rem, 1.5vw, 1.25rem);
+  --step-0: 1rem;
+  --step--1: 0.875rem;
+  --label: 0.78rem;
+
+  /* layout */
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1180px;
+  --space: clamp(56px, 8vw, 120px);
+  --bezel: 12px;
+
+  /* motion */
+  --fast: 150ms;
+  --base: 240ms;
+  --ease: cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (max-width: 600px) {
+  :root {
+    --bezel: 8px;
+    --r-lg: 18px;
+  }
+}

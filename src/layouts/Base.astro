@@ -1,0 +1,78 @@
+---
+import "../styles/global.css";
+import Sky from "../components/Sky.astro";
+import Critters from "../components/Critters.astro";
+import { site } from "../data/site";
+const { title = site.title, description = site.description } = Astro.props;
+const url = new URL(Astro.url.pathname, `https://${site.domain}`).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#161616" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,800..900&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      // html.js: JS is running, hero may start hidden. html.ready: display font is in, run the intro.
+      (function () {
+        var h = document.documentElement;
+        h.classList.add("js");
+        var go = function () {
+          h.classList.add("ready");
+        };
+        var t = setTimeout(go, 1200);
+        if (document.fonts && document.fonts.load) {
+          document.fonts.load("900 1em Archivo").then(function () {
+            clearTimeout(t);
+            go();
+          }, go);
+        }
+      })();
+    </script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Avrik Berman",
+        url: `https://${site.domain}`,
+        jobTitle: "AI process integrator",
+        sameAs: [site.linkedin, site.github],
+      })}
+    />
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${site.ga}`}></script>
+    <script is:inline define:vars={{ ga: site.ga }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", ga);
+    </script>
+  </head>
+  <body>
+    <div class="frame">
+      <Sky />
+      <slot />
+      <Critters />
+    </div>
+    <script src="../scripts/motion.ts"></script>
+  </body>
+</html>

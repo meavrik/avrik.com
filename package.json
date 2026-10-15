@@ -1,9 +1,15 @@
 {
   "name": "avrik-com",
-  "version": "2026.10.0",
+  "version": "2026.10.1",
   "private": true,
-  "description": "avrik.com — static site, no build step.",
+  "type": "module",
+  "description": "avrik.com — AI process integrator. Astro, no framework.",
   "scripts": {
-    "start": "npx --yes serve -l 4200 ."
+    "dev": "astro dev --port 4200",
+    "build": "astro build",
+    "preview": "astro preview --port 4200"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
   }
 }

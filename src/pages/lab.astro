@@ -1,0 +1,185 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Contact from "../components/Contact.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+const { lab } = site;
+const fills = ["sky", "green", "pink", "orange"];
+---
+
+<Base
+  title={`Lab — ${site.name}`}
+  description={`Side projects by Avrik Berman: ${lab.projects.map((p) => p.name).join(", ")}.`}
+>
+  <Nav />
+  <main>
+    <section class="section wrap" id="lab">
+      <h1 class="section-title reveal">{lab.title}</h1>
+      <p class="sub reveal">{lab.sub}</p>
+      <ul class="projects">
+        {
+          lab.projects.map((p, i) => (
+            <li class="project box reveal" style={`--i:${i + 1};--fill:var(--${fills[i % fills.length]})`}>
+              <span class="sticker display" style={`--tilt:${i % 2 ? 5 : -5}deg`} aria-hidden="true">
+                {p.sticker}
+              </span>
+              <img
+                class="shot"
+                src={p.image}
+                alt={`Screenshot of ${p.name}`}
+                width="960"
+                height="720"
+                loading={i < 2 ? "eager" : "lazy"}
+              />
+              <div class="body">
+                <span class="label">
+                  {String(i + 1).padStart(2, "0")} — {new URL(p.url).host}
+                </span>
+                <h2>
+                  {p.name}
+                  {p.native && (
+                    <span class="native" lang="he" dir="rtl">
+                      {p.native}
+                    </span>
+                  )}
+                </h2>
+                <p class="line">{p.line}</p>
+                <p class="how">{p.how}</p>
+                {p.behind && (
+                  <ul class="behind">
+                    {p.behind.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                <a class="btn btn-primary press" href={p.url} target="_blank" rel="noopener">
+                  {p.cta} <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+    <Contact />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .section-title {
+    margin-bottom: 20px;
+  }
+  .sub {
+    font-size: var(--step-1);
+    max-width: 52ch;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .projects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 3vw, 36px);
+  }
+  .project {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    padding: clamp(14px, 1.6vw, 18px);
+    background: var(--fill);
+    border-radius: var(--r-lg);
+  }
+  .shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: top;
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--r);
+    background: var(--paper-2);
+  }
+  .body {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    justify-items: start;
+    padding: 0 clamp(6px, 1vw, 12px) clamp(6px, 1vw, 12px);
+  }
+  h2 {
+    font-size: var(--step-3);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 14px;
+  }
+  /* the Hebrew masthead name: the display face has no Hebrew, so it gets the body face */
+  .native {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 0.7em;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.7;
+  }
+  .line {
+    font-size: var(--step-0);
+    max-width: 46ch;
+  }
+  .how {
+    font-size: var(--step--1);
+    font-weight: 500;
+    padding-top: 12px;
+    border-top: 2px solid var(--ink);
+    justify-self: stretch;
+  }
+  .behind {
+    list-style: none;
+    margin: 0 0 6px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    font-size: var(--step--1);
+    font-weight: 500;
+    justify-self: stretch;
+  }
+  .behind li {
+    position: relative;
+    padding-left: 22px;
+  }
+  /* an ink diamond for a bullet */
+  .behind li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.5em;
+    width: 8px;
+    height: 8px;
+    background: var(--ink);
+    transform: rotate(45deg);
+  }
+  /* a sticker slapped across the card's top corner, like the lanes' "Ship it!" */
+  .sticker {
+    position: absolute;
+    z-index: 1;
+    top: -16px;
+    right: 22px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    background: var(--yellow);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+    transform: rotate(var(--tilt));
+  }
+  @media (max-width: 820px) {
+    .projects {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+    }
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+import { site } from "../data/site";
+import Icon from "./Icon.astro";
+const here = Astro.url.pathname;
+---
+
+<header class="nav">
+  <div class="wrap row">
+    <a href="/#top" class="logo label">
+      <Icon name="globe" size={22} class="in" />
+      avrik<span>.com</span>
+    </a>
+    <nav aria-label="Sections" class="links">
+      {
+        site.nav.map((n) => (
+          <a class="label" href={n.href} aria-current={n.href === here ? "page" : undefined}>
+            {n.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="right">
+      <a class="btn btn-sm press" href="#talk">Contact <span aria-hidden="true">↗</span></a>
+      <span class="disc" aria-hidden="true"><Icon name="spark" size={18} class="in" /></span>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    border-bottom: var(--bw) solid var(--ink);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 16px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .logo span {
+    opacity: 0.5;
+  }
+  .logo :global(.ico) {
+    stroke-width: 3.5;
+  }
+  .links {
+    display: flex;
+    gap: clamp(14px, 3vw, 40px);
+  }
+  .links a {
+    text-decoration: none;
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+    transition: border-color var(--fast);
+  }
+  .links a:hover,
+  .links a[aria-current] {
+    border-color: var(--ink);
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-sm {
+    padding: 8px 16px;
+  }
+  .disc {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    background: var(--orange);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+  }
+  @media (max-width: 640px) {
+    .links {
+      display: none;
+    }
+  }
+</style>

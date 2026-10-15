@@ -1,0 +1,402 @@
+---
+// One panel per team, opened from that lane's call to action (see Lanes.astro).
+// Left: the team's common problems as tabs. Right: the road out of the selected one.
+import { site } from "../data/site";
+const { roadmap } = site;
+const teams = ["dev", "biz"] as const;
+---
+
+<div class="roadmap box" id="roadmap" hidden data-team="dev">
+  {
+    teams.map((team) => {
+      const t = roadmap[team];
+      return (
+        <div class="team" data-team-panel={team} hidden={team !== "dev"}>
+          <div class="head">
+            <span class="label pill">Road map — {t.title}</span>
+            <button class="close" type="button" data-roadmap-close aria-label="Close the road map">
+              ✕
+            </button>
+          </div>
+          <p class="intro">{t.intro}</p>
+
+          <div class="body">
+            <div
+              class="problems"
+              role="tablist"
+              aria-orientation="vertical"
+              aria-label={`${t.title}: common problems`}
+            >
+              {t.problems.map((p, i) => (
+                <button
+                  class="problem"
+                  type="button"
+                  role="tab"
+                  id={`${team}-tab-${i}`}
+                  aria-controls={`${team}-road-${i}`}
+                  aria-selected={i === 0 ? "true" : "false"}
+                  tabindex={i === 0 ? 0 : -1}
+                >
+                  <span class="label n">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="t">{p.title}</span>
+                  <span class="arr" aria-hidden="true">
+                    →
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div class="roads">
+              {t.problems.map((p, i) => (
+                <div
+                  class="road"
+                  role="tabpanel"
+                  id={`${team}-road-${i}`}
+                  aria-labelledby={`${team}-tab-${i}`}
+                  hidden={i !== 0}
+                  tabindex="0"
+                >
+                  <h4 class="display">{p.title}</h4>
+                  <p class="pain">{p.pain}</p>
+                  <ol class="stops">
+                    {p.road.map((s, j) => (
+                      <li class="stop" style={`--j:${j}`}>
+                        <span class="disc display">{j + 1}</span>
+                        <div>
+                          <b>{s.title}</b>
+                          <p>{s.line}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                  <p class="outcome">
+                    <span class="label">{roadmap.outcomeLabel}</span>
+                    {p.outcome}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    })
+  }
+</div>
+
+<style>
+  .roadmap {
+    --accent: var(--pink);
+    margin-top: clamp(16px, 2.5vw, 28px);
+    padding: clamp(20px, 3vw, 36px);
+    border-radius: var(--r-lg);
+    scroll-margin-top: 16px;
+    animation: open 300ms var(--ease-out) both;
+  }
+  .roadmap[hidden],
+  .team[hidden],
+  .road[hidden] {
+    display: none;
+  }
+  .roadmap[data-team="biz"] {
+    --accent: var(--orange);
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .pill {
+    padding: 7px 14px;
+    background: var(--accent);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+  }
+  .close {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    font: inherit;
+    font-weight: 700;
+    color: inherit;
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+    cursor: pointer;
+  }
+  .close:hover {
+    background: var(--yellow);
+  }
+  .intro {
+    margin-top: 14px;
+    font-size: var(--step-1);
+    max-width: 44ch;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) minmax(0, 1.6fr);
+    gap: clamp(20px, 3vw, 44px);
+    align-items: start;
+    margin-top: 28px;
+  }
+
+  /* problems: vertical tabs */
+  .problems {
+    display: grid;
+    gap: 10px;
+  }
+  .problem {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    text-align: left;
+    font: inherit;
+    font-weight: 500;
+    line-height: 1.25;
+    color: inherit;
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--r);
+    cursor: pointer;
+    transition:
+      background var(--fast),
+      transform var(--fast) var(--ease-out),
+      box-shadow var(--fast) var(--ease-out);
+  }
+  .problem .n {
+    opacity: 0.6;
+  }
+  .problem .arr {
+    opacity: 0;
+    transition: opacity var(--fast);
+  }
+  @media (hover: hover) {
+    .problem:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--lift);
+    }
+  }
+  .problem[aria-selected="true"] {
+    background: var(--accent);
+  }
+  .problem[aria-selected="true"] .n,
+  .problem[aria-selected="true"] .arr {
+    opacity: 1;
+  }
+
+  /* the road: numbered stops along a dashed line */
+  h4 {
+    margin: 0;
+    font-size: var(--step-3);
+  }
+  .pain {
+    margin-top: 10px;
+    max-width: 48ch;
+  }
+  .stops {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 22px;
+  }
+  .stop {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  /* dashed road segment from this disc down to the next one */
+  .stop:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 44px;
+    bottom: -22px;
+    border-left: 3px dashed var(--ink);
+    transform-origin: top;
+  }
+  .disc {
+    position: relative;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    font-size: 1rem;
+    background: var(--accent);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+  }
+  .stop:last-child .disc {
+    background: var(--ink);
+    color: var(--paper-2);
+  }
+  .stop b {
+    display: block;
+    padding-top: 10px;
+    font-family: var(--display);
+    font-weight: 900;
+    font-stretch: 112%;
+    font-size: 1.05rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .stop p {
+    margin-top: 4px;
+    max-width: 44ch;
+  }
+  .outcome {
+    display: inline-grid;
+    gap: 4px;
+    margin: 28px 0 0 60px;
+    padding: 14px 18px;
+    max-width: 40ch;
+    font-weight: 500;
+    background: var(--yellow);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--r);
+    transform: rotate(-1.5deg);
+  }
+
+  /* replay the road whenever a problem is picked */
+  .road.show .stop {
+    animation: stop-in 360ms var(--ease-out) both;
+    animation-delay: calc(var(--j) * 90ms);
+  }
+  .road.show .stop::before {
+    animation: grow 300ms var(--ease-out) both;
+    animation-delay: calc(var(--j) * 90ms + 120ms);
+  }
+  .road.show .outcome {
+    animation: stop-in 360ms var(--ease-out) both;
+    animation-delay: 420ms;
+  }
+  @keyframes open {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  @keyframes stop-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  @keyframes grow {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .body {
+      grid-template-columns: 1fr;
+    }
+    .outcome {
+      margin-left: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roadmap,
+    .road.show .stop,
+    .road.show .stop::before,
+    .road.show .outcome {
+      animation: none;
+    }
+    .problem {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const map = document.getElementById("roadmap");
+  if (map) {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ctas = [...document.querySelectorAll<HTMLButtonElement>("[data-roadmap-open]")];
+    const panels = [...map.querySelectorAll<HTMLElement>("[data-team-panel]")];
+    let opener: HTMLButtonElement | null = null;
+
+    const setCta = (b: HTMLButtonElement, open: boolean) => {
+      b.setAttribute("aria-expanded", String(open));
+      const l = b.querySelector(".cta-label");
+      if (l) l.textContent = open ? b.dataset.labelHide! : b.dataset.labelShow!;
+    };
+    const replay = (road: HTMLElement | null) => {
+      if (!road) return;
+      road.classList.remove("show");
+      void road.offsetWidth; // restart the animation
+      road.classList.add("show");
+    };
+
+    const show = (team: string, from: HTMLButtonElement) => {
+      map.hidden = false;
+      map.dataset.team = team;
+      for (const p of panels) p.hidden = p.dataset.teamPanel !== team;
+      for (const b of ctas) setCta(b, b.dataset.roadmapOpen === team);
+      opener = from;
+      const panel = panels.find((p) => p.dataset.teamPanel === team);
+      replay(panel?.querySelector<HTMLElement>(".road:not([hidden])") ?? null);
+      map.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    };
+    const hide = () => {
+      map.hidden = true;
+      for (const b of ctas) setCta(b, false);
+      opener?.focus();
+      opener = null;
+    };
+
+    for (const b of ctas) {
+      b.addEventListener("click", () => {
+        const team = b.dataset.roadmapOpen!;
+        if (!map.hidden && map.dataset.team === team) hide();
+        else show(team, b);
+      });
+    }
+    for (const c of map.querySelectorAll("[data-roadmap-close]")) c.addEventListener("click", hide);
+    map.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") hide();
+    });
+
+    // problem tabs, one set per team
+    for (const panel of panels) {
+      const tabs = [...panel.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      const roads = [...panel.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+      const select = (i: number, focus = false) => {
+        tabs.forEach((t, k) => {
+          t.setAttribute("aria-selected", String(k === i));
+          t.tabIndex = k === i ? 0 : -1;
+        });
+        roads.forEach((r, k) => (r.hidden = k !== i));
+        replay(roads[i]);
+        if (focus) tabs[i].focus();
+      };
+      tabs.forEach((t, i) => {
+        t.addEventListener("click", () => select(i));
+        t.addEventListener("keydown", (e) => {
+          const n = tabs.length;
+          const next: Record<string, number> = {
+            ArrowDown: (i + 1) % n,
+            ArrowRight: (i + 1) % n,
+            ArrowUp: (i - 1 + n) % n,
+            ArrowLeft: (i - 1 + n) % n,
+            Home: 0,
+            End: n - 1,
+          };
+          if (e.key in next) {
+            e.preventDefault();
+            select(next[e.key], true);
+          }
+        });
+      });
+    }
+  }
+</script>

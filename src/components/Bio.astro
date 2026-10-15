@@ -1,0 +1,184 @@
+---
+import { site } from "../data/site";
+import Icon from "./Icon.astro";
+import Portrait from "./Portrait.astro";
+const { bio } = site;
+const last = bio.path.length - 1;
+---
+
+<section class="section wrap" id="bio">
+  <div class="bio">
+    <div class="story">
+      <div class="portrait reveal"><Portrait /></div>
+      <span class="label reveal">{bio.label}</span>
+      <h2 class="section-title reveal" style="--i:1">{bio.title}</h2>
+      <div class="about">
+        {
+          bio.about.map((p, i) => (
+            <p class="reveal" style={`--i:${i + 2}`}>
+              {p}
+            </p>
+          ))
+        }
+      </div>
+      <p class="closer display reveal" style={`--i:${bio.about.length + 2}`}>
+        <span>{bio.closer}</span>
+      </p>
+      <p class="after reveal" style={`--i:${bio.about.length + 3}`}>
+        {bio.after.text}
+        <a href={bio.after.href}>
+          {bio.after.link}
+          <Icon name="arrow" size={16} class="in" />
+        </a>
+      </p>
+    </div>
+
+    <!-- the path: numbered stops along a dashed line, today at the end -->
+    <ol class="path">
+      {
+        bio.path.map((p, i) => (
+          <li class="stop reveal" style={`--i:${i + 2}`}>
+            <span class="disc display">{i + 1}</span>
+            <div class="card box">
+              {i === last && <span class="now tag">{bio.now}</span>}
+              <h3>{p.title}</h3>
+              <p>{p.line}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .bio {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: center;
+  }
+
+  .story {
+    display: grid;
+    justify-items: start;
+  }
+  .portrait {
+    --me-size: clamp(8px, 0.35vw + 6px, 11px);
+    margin-bottom: 20px;
+  }
+  .story > .label {
+    margin-bottom: 14px;
+  }
+  .section-title {
+    margin-bottom: 20px;
+  }
+  .about {
+    display: grid;
+    gap: 14px;
+    font-size: var(--step-1);
+    max-width: 46ch;
+  }
+  /* the sign-off: display type on a yellow highlighter stroke */
+  .closer {
+    margin-top: 24px;
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    line-height: 1.15;
+  }
+  .closer span {
+    background: linear-gradient(transparent 55%, var(--yellow) 55%, var(--yellow) 92%, transparent 92%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .after {
+    margin-top: 22px;
+    font-size: var(--step--1);
+  }
+  .after a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 6px;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid var(--ink);
+  }
+  .after :global(.ico) {
+    stroke-width: 4;
+  }
+  .after a:hover {
+    background: var(--yellow);
+  }
+
+  .path {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 22px;
+  }
+  .stop {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+  }
+  /* dashed segment from this disc down to the next one */
+  .stop:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: calc(50% + 22px);
+    height: calc(100% - 44px + 22px);
+    border-left: 3px dashed var(--ink);
+  }
+  .disc {
+    position: relative;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    font-size: 1rem;
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+  }
+  .card {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    padding: 16px 20px;
+  }
+  h3 {
+    font-size: 1.15rem;
+    line-height: 1.05;
+  }
+  .card p {
+    font-size: var(--step--1);
+    max-width: 44ch;
+  }
+
+  /* today: lit card, inked disc, a sticker on the corner */
+  .stop:last-child .disc {
+    background: var(--ink);
+    color: var(--paper-2);
+  }
+  .stop:last-child .card {
+    background: var(--yellow);
+  }
+  .now {
+    position: absolute;
+    top: -14px;
+    right: 18px;
+    background: var(--pink);
+    --tilt: 5deg;
+  }
+
+  @media (max-width: 820px) {
+    .bio {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

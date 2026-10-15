@@ -1,0 +1,799 @@
+---
+// Critters: a snail creeps along the top edge of a box that's in view. Now and then the
+// bird from the clouds swoops in and carries one off; a new one turns up shortly after.
+// Everything is plain elements and CSS. The script clones the prototypes below, dresses
+// each snail as one of the variants (v-*), places it on a clear stretch of a box's top
+// edge and flies the bird.
+---
+
+<div class="critters" aria-hidden="true">
+  <!-- snail, facing right -->
+  <div class="critter snail proto" style="--cw:40px;--ch:28px">
+    <div class="walker">
+      <div class="pop">
+        <div class="face">
+          <span class="foot"></span>
+          <span class="front">
+            <span class="stalk a"><i></i></span>
+            <span class="stalk b"><i></i></span>
+            <span class="head"><i class="mouth"></i></span>
+          </span>
+          <span class="shell"><i class="sprout"></i></span>
+        </div>
+      </div>
+      <span class="alert display">!</span>
+    </div>
+  </div>
+
+  <!-- the bird in flight, facing right. Its origin is the point between its feet -->
+  <div class="flyer proto">
+    <div class="fy">
+      <div class="ff">
+        <span class="wing back"></span>
+        <span class="tail"></span>
+        <span class="legs"></span>
+        <span class="fbody">
+          <span class="tuft"></span>
+          <span class="cheek"></span>
+          <span class="beak"></span>
+          <span class="eye"><i></i></span>
+        </span>
+        <span class="wing front"></span>
+        <span class="claws"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .critters {
+    position: absolute;
+    inset: 0;
+    z-index: 2; /* over the page content, under the paper grain */
+    pointer-events: none;
+  }
+  .proto {
+    display: none !important;
+  }
+
+  /* ── a critter: placed at the left end of its stretch; the walker paces it ── */
+  .critter {
+    position: absolute;
+    width: var(--cw);
+    height: var(--ch);
+  }
+  .walker {
+    position: absolute;
+    inset: 0;
+    animation: walk var(--dur) linear var(--lag) infinite alternate;
+  }
+  @keyframes walk {
+    from {
+      translate: 0 0;
+    }
+    to {
+      translate: var(--run) 0;
+    }
+  }
+  /* turn round at each end */
+  .face {
+    position: absolute;
+    inset: 0;
+    animation: turn calc(var(--dur) * 2) step-end var(--lag) infinite;
+  }
+  @keyframes turn {
+    0% {
+      scale: 1 1;
+    }
+    50%,
+    100% {
+      scale: -1 1;
+    }
+  }
+  /* arrive with a little pop, like a sticker */
+  .pop {
+    position: absolute;
+    inset: 0;
+    transform: scale(var(--size));
+    transform-origin: 50% 100%;
+    animation: critter-pop 520ms var(--ease) both;
+  }
+  @keyframes critter-pop {
+    from {
+      scale: 0;
+    }
+  }
+  /* "!" when it hears the bird coming */
+  .alert {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--ch) * var(--size) + 4px);
+    margin-left: -4px;
+    font-size: 15px;
+    line-height: 1;
+    scale: 0;
+    transform-origin: 50% 100%;
+  }
+  .critter.spotted .alert {
+    animation: alert-pop 260ms var(--ease) forwards;
+  }
+  @keyframes alert-pop {
+    to {
+      scale: 1;
+    }
+  }
+
+  /* snail. A variant sets its skin, shell, size and how fast it oozes */
+  .snail {
+    --skin: var(--teal);
+    --shell: var(--orange);
+    --size: 1;
+    --ooze: 1.8s;
+  }
+  .foot {
+    position: absolute;
+    left: 1px;
+    bottom: 0;
+    width: 36px;
+    height: 9px;
+    background: var(--skin);
+    border: 2px solid var(--ink);
+    border-radius: 4px 8px 3px 3px / 4px 6px 3px 3px;
+    transform-origin: 0 100%;
+    animation: ooze var(--ooze) ease-in-out infinite;
+  }
+  .front {
+    position: absolute;
+    right: 1px;
+    bottom: 0;
+    width: 12px;
+    height: 28px;
+    animation: ooze-front var(--ooze) ease-in-out infinite;
+  }
+  .head {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    width: 11px;
+    height: 14px;
+    background: var(--skin);
+    border: 2px solid var(--ink);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+  }
+  .snail .mouth {
+    position: absolute;
+    right: 1px;
+    top: 5px;
+    width: 4px;
+    height: 3px;
+    border-bottom: 1.5px solid var(--ink);
+    border-radius: 0 0 4px 4px;
+  }
+  .stalk {
+    position: absolute;
+    bottom: 17px;
+    width: 2px;
+    height: 9px;
+    background: var(--ink);
+    border-radius: 1px;
+    transform-origin: 50% 100%;
+    animation: stalk 1.4s ease-in-out infinite alternate;
+  }
+  .stalk.a {
+    right: 7px;
+    rotate: -16deg;
+  }
+  .stalk.b {
+    right: 2px;
+    rotate: 14deg;
+    animation-delay: -0.7s;
+  }
+  .stalk i {
+    position: absolute;
+    top: -5px;
+    left: -3px;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    background: radial-gradient(circle at 62% 55%, var(--ink) 0 1.6px, var(--paper-2) 2px);
+  }
+  .shell {
+    position: absolute;
+    left: 3px;
+    bottom: 6px;
+    width: 22px;
+    height: 22px;
+    background: var(--shell);
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    animation: ooze-shell var(--ooze) ease-in-out infinite;
+  }
+  /* the swirl: an open ring and a dot */
+  .shell::before,
+  .shell::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+  }
+  .shell::before {
+    left: 2px;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--ink);
+    border-bottom-color: transparent;
+    rotate: -40deg;
+  }
+  .shell::after {
+    left: 6px;
+    top: 6px;
+    width: 4px;
+    height: 4px;
+    background: var(--ink);
+  }
+  @keyframes ooze {
+    50% {
+      scale: 1.07 1;
+    }
+  }
+  @keyframes ooze-front {
+    50% {
+      translate: 2.5px 0;
+    }
+  }
+  @keyframes ooze-shell {
+    50% {
+      translate: 1px -1px;
+    }
+  }
+  @keyframes stalk {
+    to {
+      translate: 0 -1px;
+      scale: 1 1.15;
+    }
+  }
+
+  /* ── variants. classic is the defaults above ── */
+  /* spotty: a pink shell with cream polka dots */
+  .v-spotty {
+    --skin: var(--green);
+    --shell: var(--pink);
+  }
+  .v-spotty .shell {
+    background:
+      radial-gradient(circle at 30% 32%, var(--paper-2) 0 2.4px, var(--ink) 2.6px 3.8px, transparent 4px),
+      radial-gradient(circle at 72% 40%, var(--paper-2) 0 1.6px, var(--ink) 1.8px 3px, transparent 3.2px),
+      radial-gradient(circle at 45% 74%, var(--paper-2) 0 1.8px, var(--ink) 2px 3.2px, transparent 3.4px),
+      var(--shell);
+  }
+  /* bee: a yellow shell with ink stripes */
+  .v-bee {
+    --skin: var(--sky);
+    --shell: var(--yellow);
+    --ooze: 1.6s;
+  }
+  .v-bee .shell {
+    background: repeating-linear-gradient(-40deg, var(--shell) 0 3.5px, var(--ink) 3.5px 6px);
+  }
+  /* the pattern takes the swirl's place */
+  .v-spotty .shell::before,
+  .v-spotty .shell::after,
+  .v-bee .shell::before,
+  .v-bee .shell::after {
+    display: none;
+  }
+  /* baby: small, quick little ooze, slow going */
+  .v-baby {
+    --skin: var(--pink);
+    --shell: var(--sky);
+    --size: 0.7;
+    --ooze: 1.3s;
+  }
+  /* racer: a number 8 roundel (it reads the same both ways round) and speed lines */
+  .v-racer {
+    --skin: var(--orange);
+    --shell: var(--blue);
+    --ooze: 0.7s;
+  }
+  .v-racer .shell::before {
+    left: 3px;
+    top: 3px;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    rotate: none;
+  }
+  .v-racer .shell::after {
+    content: "8";
+    left: 3px;
+    top: 3px;
+    width: 12px;
+    height: 12px;
+    display: grid;
+    place-items: center;
+    background: none;
+    font: 800 8px/1 var(--display);
+    color: var(--ink);
+  }
+  .v-racer .face::before {
+    content: "";
+    position: absolute;
+    left: -9px;
+    bottom: 8px;
+    width: 8px;
+    height: 11px;
+    border-radius: 1px;
+    background: repeating-linear-gradient(var(--ink) 0 2px, transparent 2px 4.5px);
+    animation: whoosh 0.2s ease-in-out infinite alternate;
+  }
+  @keyframes whoosh {
+    to {
+      translate: -2px 0;
+    }
+  }
+  /* mossy: big, old and slow, with a sprout growing out of its shell */
+  .v-mossy {
+    --skin: var(--yellow);
+    --shell: var(--teal);
+    --size: 1.12;
+    --ooze: 2.6s;
+  }
+  .sprout {
+    display: none;
+    position: absolute;
+    left: 5px;
+    top: -9px;
+    width: 2px;
+    height: 9px;
+    border-radius: 1px;
+    background: var(--ink);
+    transform-origin: 50% 100%;
+    animation: sway 2.2s ease-in-out infinite alternate;
+  }
+  .v-mossy .sprout {
+    display: block;
+  }
+  .sprout::before,
+  .sprout::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    width: 8px;
+    height: 6px;
+    background: var(--green);
+    border: 1.5px solid var(--ink);
+  }
+  .sprout::before {
+    right: 1px;
+    border-radius: 70% 0;
+    rotate: 15deg;
+  }
+  .sprout::after {
+    left: 1px;
+    border-radius: 0 70%;
+    rotate: -15deg;
+  }
+  @keyframes sway {
+    from {
+      rotate: -14deg;
+    }
+    to {
+      rotate: 8deg;
+    }
+  }
+
+  /* caught: stop pacing and hide in the shell, which hangs from the bird's claws */
+  .critter.caught .walker,
+  .critter.caught .face,
+  .critter.caught .pop {
+    animation: none;
+    translate: none;
+    scale: none;
+  }
+  .critter.caught .pop {
+    transform-origin: 50% 0;
+  }
+  .critter.caught .alert,
+  .caught.v-racer .face::before {
+    display: none;
+  }
+  .caught.snail .foot,
+  .caught.snail .front {
+    scale: 0;
+    transition: scale 160ms ease-in;
+    animation: none;
+  }
+  .caught.snail .shell {
+    animation: shake 0.18s ease-in-out infinite alternate;
+  }
+  @keyframes shake {
+    from {
+      rotate: -10deg;
+    }
+    to {
+      rotate: 10deg;
+    }
+  }
+
+  /* ── the bird in flight ── */
+  .flyer,
+  .fy {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .ff {
+    position: absolute;
+    left: -28px;
+    top: -50px;
+    width: 56px;
+    height: 50px;
+    transform-origin: 28px 50px;
+  }
+  .fbody {
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    width: 36px;
+    height: 32px;
+    background: var(--yellow);
+    border: var(--bw) solid var(--ink);
+    border-radius: 50% 50% 46% 46%;
+  }
+  .ff .eye {
+    position: absolute;
+    top: -8px;
+    right: -1px;
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+  }
+  /* eyes on the prize: looking ahead and down */
+  .ff .eye i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    translate: 2px 2px;
+  }
+  .ff .beak {
+    position: absolute;
+    right: -11px;
+    top: 10px;
+    width: 13px;
+    height: 9px;
+    background: var(--orange);
+    border: 2px solid var(--ink);
+    border-radius: 3px 10px 6px 3px;
+  }
+  .ff .cheek {
+    position: absolute;
+    right: 5px;
+    top: 16px;
+    width: 7px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--pink);
+  }
+  .ff .tuft {
+    position: absolute;
+    left: 12px;
+    top: -14px;
+  }
+  .ff .tuft::before,
+  .ff .tuft::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 13px;
+    border: 2.5px solid transparent;
+    border-left-color: var(--ink);
+    border-radius: 50%;
+  }
+  .ff .tuft::before {
+    rotate: 20deg;
+  }
+  .ff .tuft::after {
+    left: 5px;
+    top: 2px;
+    rotate: -15deg;
+  }
+  .tail {
+    position: absolute;
+    left: 1px;
+    top: 17px;
+    width: 15px;
+    height: 10px;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 9px 2px 2px 9px;
+    rotate: 18deg;
+  }
+  .wing {
+    position: absolute;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    animation: flap 0.22s ease-in-out infinite alternate;
+  }
+  .wing.back {
+    left: 16px;
+    top: 4px;
+    width: 22px;
+    height: 12px;
+    background: #e2ad2f;
+    transform-origin: 85% 80%;
+    animation-delay: -0.06s;
+  }
+  .wing.front {
+    left: 12px;
+    top: 15px;
+    width: 25px;
+    height: 13px;
+    transform-origin: 85% 30%;
+  }
+  @keyframes flap {
+    from {
+      rotate: -38deg;
+    }
+    to {
+      rotate: 24deg;
+    }
+  }
+  .legs::before,
+  .legs::after {
+    content: "";
+    position: absolute;
+    top: 38px;
+    width: 2.5px;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+  .legs::before {
+    left: 23px;
+  }
+  .legs::after {
+    left: 30px;
+  }
+  .claws {
+    position: absolute;
+    left: 28px;
+    top: 50px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .critters {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const layer = document.querySelector<HTMLElement>(".critters");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (layer && !reduced) {
+    type Critter = {
+      el: HTMLElement;
+      walker: HTMLElement;
+      pop: HTMLElement;
+      box: HTMLElement;
+      variant: string;
+      born: number;
+      caught: boolean;
+    };
+    const proto = (sel: string) => layer.querySelector<HTMLElement>(sel)!;
+    const snailProto = proto(".critter.snail");
+    // each variant's look is its v-* class; this is how fast it goes, in px per second
+    const VARIANTS: Record<string, number> = { classic: 6, spotty: 6, bee: 7, baby: 4, racer: 14, mossy: 3.5 };
+    const flyerProto = proto(".flyer");
+
+    const live: Critter[] = [];
+    let flying = false;
+    let generation = 0; // bumped on every layout change; stale flights stop
+    let calm = 0; // no new critter before this time
+    let prefer: HTMLElement | null = null; // a snatched critter's box gets the next one
+
+    const now = () => performance.now();
+    const shuffle = <T,>(a: T[]) => a.sort(() => Math.random() - 0.5);
+    const origin = () => layer.getBoundingClientRect();
+
+    // only page background at (x, y): no text, sticker, badge or other box
+    const clear = (x: number, y: number) => {
+      if (y < 4 || y > innerHeight - 4 || x < 4 || x > innerWidth - 4) return false;
+      const el = document.elementFromPoint(x, y);
+      return !!el && el.matches(".frame, main, section, .wrap, .hero, .side, .lanes, .tiles, .steps, .bio, .story, ol, ul");
+    };
+
+    // the longest clear stretch along a box's top edge, in layer coordinates
+    const stretchOn = (box: HTMLElement, cw: number, ch: number) => {
+      const r = box.getBoundingClientRect();
+      if (r.width < 160 || r.top < 70 || r.top > innerHeight - 40) return null;
+      const rev = box.closest<HTMLElement>(".reveal");
+      if (rev && (!rev.classList.contains("in") || rev.getAnimations().some((a) => a.playState === "running"))) return null;
+      const cs = getComputedStyle(box);
+      const rl = Math.min(parseFloat(cs.borderTopLeftRadius) || 0, r.height / 2);
+      const rr = Math.min(parseFloat(cs.borderTopRightRadius) || 0, r.height / 2);
+      const x0 = r.left + rl + 4;
+      const x1 = r.right - rr - 4;
+      let best: [number, number] = [0, 0];
+      let start = -1;
+      for (let x = x0; x <= x1 + 0.1; x += 6) {
+        // room for the critter, and headroom above it for its "!"
+        const ok = clear(x, r.top - 4) && clear(x, r.top - ch + 2) && clear(x, r.top - ch - 18);
+        if (ok && start < 0) start = x;
+        const last = x + 6 > x1 + 0.1;
+        if (start >= 0 && (!ok || last)) {
+          const end = ok ? x : x - 6;
+          if (end - start > best[1] - best[0]) best = [start, end];
+          start = -1;
+        }
+      }
+      if (best[1] - best[0] < cw + 50) return null;
+      const o = origin();
+      return { a: best[0] - o.left, b: best[1] - o.left, y: r.top - o.top };
+    };
+
+    const spawn = () => {
+      // not the same variant as one already out
+      const out = new Set(live.map((c) => c.variant));
+      const choices = Object.keys(VARIANTS).filter((v) => !out.has(v));
+      const variant = choices[Math.floor(Math.random() * choices.length)];
+      const p = snailProto;
+      const cw = parseFloat(p.style.getPropertyValue("--cw"));
+      const ch = parseFloat(p.style.getPropertyValue("--ch"));
+      const taken = new Set(live.map((c) => c.box));
+      const boxes = shuffle([...document.querySelectorAll<HTMLElement>("main .box")].filter((b) => !taken.has(b)));
+      if (prefer && !taken.has(prefer)) boxes.unshift(prefer);
+      prefer = null;
+      for (const box of boxes) {
+        const s = stretchOn(box, cw, ch);
+        if (!s) continue;
+        const el = p.cloneNode(true) as HTMLElement;
+        el.classList.remove("proto");
+        el.classList.add(`v-${variant}`);
+        const run = s.b - s.a - cw;
+        const dur = run / VARIANTS[variant];
+        el.style.left = `${s.a}px`;
+        el.style.top = `${s.y - ch + 1}px`; // standing on the border
+        el.style.setProperty("--run", `${run}px`);
+        el.style.setProperty("--dur", `${dur.toFixed(2)}s`);
+        el.style.setProperty("--lag", `${(-Math.random() * dur * 2).toFixed(2)}s`);
+        layer.append(el);
+        live.push({
+          el,
+          walker: el.querySelector<HTMLElement>(".walker")!,
+          pop: el.querySelector<HTMLElement>(".pop")!,
+          box,
+          variant,
+          born: now(),
+          caught: false,
+        });
+        return true;
+      }
+      return false;
+    };
+
+    const drop = (c: Critter) => {
+      c.el.remove();
+      live.splice(live.indexOf(c), 1);
+    };
+
+    // the swoop: dive in from one side, grab at the bottom of the curve, climb out the other side
+    const snatch = async (c: Critter) => {
+      flying = true;
+      const gen = generation;
+      c.caught = true;
+      c.el.getAnimations({ subtree: true }).forEach((a) => a.pause()); // freeze where it stands
+      const o = origin();
+      const w = c.pop.getBoundingClientRect();
+      const g = { x: w.left + w.width / 2 - o.left, y: w.top - o.top + 2 };
+      const dir = Math.random() < 0.5 ? 1 : -1; // 1: flies left to right
+      const W = layer.clientWidth;
+      const s = { x: dir > 0 ? -80 : W + 80, y: g.y - innerHeight * 0.45 };
+      const e = { x: dir > 0 ? W + 80 : -80, y: g.y - innerHeight * 0.55 };
+      const v = 0.8; // px per ms, sideways
+      const d1 = Math.min(2000, Math.max(900, Math.abs(g.x - s.x) / v));
+      const d2 = Math.min(2000, Math.max(900, Math.abs(e.x - g.x) / v));
+
+      const bird = flyerProto.cloneNode(true) as HTMLElement;
+      bird.classList.remove("proto");
+      layer.append(bird);
+      const fy = bird.querySelector<HTMLElement>(".fy")!;
+      const ff = bird.querySelector<HTMLElement>(".ff")!;
+      const opts = (duration: number, easing: string): KeyframeAnimationOptions => ({ duration, easing, fill: "forwards" });
+      const leg = (from: typeof g, to: typeof g, d: number, yEase: string, tilt: [number, number]) => [
+        bird.animate([{ transform: `translateX(${from.x}px)` }, { transform: `translateX(${to.x}px)` }], opts(d, "linear")),
+        fy.animate([{ transform: `translateY(${from.y}px)` }, { transform: `translateY(${to.y}px)` }], opts(d, yEase)),
+        ff.animate(
+          tilt.map((t) => ({ transform: `scaleX(${dir}) rotate(${t}deg)` })),
+          opts(d, "ease-in-out"),
+        ),
+      ];
+
+      const spot = window.setTimeout(() => c.el.classList.add("spotted"), d1 - 450);
+      await leg(s, g, d1, "cubic-bezier(0.5, 1, 0.89, 1)", [26, -4])[0].finished; // ease-out: level at the bottom
+      clearTimeout(spot);
+      if (gen !== generation) return;
+
+      // grab
+      c.el.classList.remove("spotted");
+      c.el.classList.add("caught");
+      c.el.style.left = `${-parseFloat(c.el.style.getPropertyValue("--cw")) / 2}px`;
+      c.el.style.top = "0px";
+      bird.querySelector(".claws")!.append(c.el);
+      bird.querySelector(".fbody")!.animate([{ scale: "1.12 0.88" }, { scale: "1" }], { duration: 260, easing: "ease-out" });
+
+      await leg(g, e, d2, "cubic-bezier(0.11, 0, 0.5, 0)", [-4, -24])[0].finished; // ease-in: climb away
+      if (gen !== generation) return;
+      bird.remove();
+      drop(c);
+      flying = false;
+      prefer = c.box;
+      calm = now() + 2500;
+    };
+
+    // keep one or two critters on boxes in view; drop the ones left far behind
+    const tick = () => {
+      if (document.hidden) return;
+      for (const c of [...live]) {
+        if (c.caught) continue;
+        const r = c.box.getBoundingClientRect();
+        if (r.bottom < -300 || r.top > innerHeight + 300) drop(c);
+      }
+      const max = innerWidth < 600 ? 1 : 2;
+      // a critter being carried off still counts: its replacement comes after it's gone
+      if (now() > calm && live.length < max && spawn()) calm = now() + 3000;
+    };
+
+    // every so often the bird comes for one that's fully on screen and has had a little walk
+    let hunt = 0;
+    const huntLater = (ms: number) => {
+      clearTimeout(hunt);
+      hunt = window.setTimeout(tryHunt, ms);
+    };
+    function tryHunt() {
+      if (flying || document.hidden || document.querySelector(".nest.peep")) return huntLater(3000);
+      const prey = live.filter((c) => {
+        if (c.caught || now() - c.born < 8000) return false;
+        const r = c.walker.getBoundingClientRect();
+        return r.top > 90 && r.bottom < innerHeight - 30;
+      });
+      if (!prey.length) return huntLater(3000);
+      snatch(prey[Math.floor(Math.random() * prey.length)]);
+      huntLater(20000 + Math.random() * 20000);
+    }
+
+    // a layout change moves the boxes: clear everything and start over
+    const reset = () => {
+      generation++;
+      for (const c of [...live]) drop(c);
+      layer.querySelectorAll(".flyer:not(.proto)").forEach((f) => f.remove());
+      flying = false;
+      calm = now() + 1200;
+    };
+    let lastSize = "";
+    const main = document.querySelector("main");
+    if (main && "ResizeObserver" in window) {
+      new ResizeObserver(([e]) => {
+        const size = `${Math.round(e.contentRect.width)}x${Math.round(e.contentRect.height)}`;
+        if (size !== lastSize) {
+          lastSize = size;
+          reset();
+        }
+      }).observe(main);
+    }
+    addEventListener("resize", reset);
+
+    setInterval(tick, 1500);
+    huntLater(12000);
+  }
+</script>

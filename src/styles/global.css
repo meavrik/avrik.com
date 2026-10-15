@@ -1,0 +1,281 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: var(--ink);
+}
+body {
+  margin: 0;
+  padding: var(--bezel);
+  background: var(--ink);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+}
+
+/* ── the frame: a cream card sitting on a black bezel ── */
+.frame {
+  position: relative;
+  min-height: calc(100vh - 2 * var(--bezel));
+  background: var(--paper);
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--r-lg);
+  overflow: clip;
+}
+/* the frame's tint follows the section in view: motion.ts sets --bg-from / --bg-to
+   (the two sections either side of the nearest boundary) and --bg-mix (0% → 100%) */
+@supports (color: color-mix(in oklab, red 50%, blue)) {
+  .frame {
+    --bg: color-mix(in oklab, var(--bg-to, var(--paper)) var(--bg-mix, 0%), var(--bg-from, var(--paper)));
+    background: var(--bg);
+  }
+}
+/* page content sits above the sky layer */
+.frame > header,
+.frame > main,
+.frame > footer {
+  position: relative;
+  z-index: 1;
+}
+/* paper grain */
+.frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 112%;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  word-spacing: 0.12em; /* the tight tracking swallows the space, e.g. between K and Y */
+}
+/* small caps labels: the reference's CREATIVE STUDIO / BRANDING row */
+.label {
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: var(--label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+:focus-visible {
+  outline: var(--bw) solid var(--ink);
+  outline-offset: 3px;
+}
+::selection {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+/* ── layout ── */
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+.section {
+  padding-block: var(--space);
+}
+.section + .section {
+  padding-top: 0;
+}
+.section-title {
+  font-size: var(--step-5);
+  margin-bottom: clamp(28px, 4vw, 48px);
+  max-width: 14ch;
+}
+.rule {
+  border: 0;
+  border-top: var(--bw) solid var(--ink);
+  margin: 0;
+}
+
+/* ── the box: every outlined surface ── */
+.box {
+  background: var(--paper-2);
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--r);
+}
+
+/* press: hover lifts the card off the paper */
+.press {
+  transition:
+    transform var(--fast) var(--ease-out),
+    box-shadow var(--fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .press:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--lift);
+  }
+}
+.press:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* buttons: outlined pills */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: var(--label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: var(--paper-2);
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--pill);
+  white-space: nowrap;
+  color: inherit;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--yellow);
+}
+.btn-xl {
+  padding: 20px 36px;
+  font-size: var(--step-0);
+}
+.btn .ico {
+  stroke-width: 3.5;
+}
+
+/* sticker tags */
+.tag {
+  display: inline-block;
+  padding: 5px 12px;
+  font-weight: 700;
+  font-size: var(--label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  border-radius: var(--pill);
+  transform: rotate(var(--tilt, 0deg));
+}
+
+/* lane colours */
+[data-lane="dev"] {
+  --lane: var(--pink);
+}
+[data-lane="biz"] {
+  --lane: var(--orange);
+}
+
+/* reveal (one stagger per section, nothing fancier) */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.reveal.in {
+  animation: rise var(--base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* icons: strokes draw themselves on reveal */
+.ico {
+  width: var(--ico, 44px);
+  height: var(--ico, 44px);
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ico [data-draw] {
+  stroke-dasharray: var(--len, 200);
+  stroke-dashoffset: var(--len, 200);
+}
+.in .ico [data-draw],
+.ico.in [data-draw] {
+  animation: draw 700ms var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 60ms + 120ms);
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+/* nudge on hover */
+@media (hover: hover) {
+  .press:hover .ico {
+    animation: nudge 400ms var(--ease);
+  }
+}
+@keyframes nudge {
+  30% {
+    transform: rotate(-6deg) scale(1.08);
+  }
+  60% {
+    transform: rotate(4deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .sky {
+    display: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal.in,
+  .ico [data-draw],
+  .in .ico [data-draw],
+  .press:hover .ico {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+  .press,
+  .btn {
+    transition: none;
+  }
+}

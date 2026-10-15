@@ -1,0 +1,533 @@
+---
+// The sky: a sticky layer behind the page. At every section boundary a scatter of small
+// cartoon clouds drifts up through the viewport while the frame's tint changes underneath
+// (see motion.ts, part 5, which drives --t on this layer:
+// -1 = boundary at the bottom of the viewport, 0 = centred, 1 = at the top).
+//
+// Clouds are flat shapes with a thin outline, like the rest of the site, but in colours
+// taken from the current tint so they stay quiet: a lighter fill, a softened ink line.
+// Each one bobs a little and drifts slowly sideways on its own clock. Now and then a bird peeps out from
+// behind one of them (the script at the bottom).
+import { site } from "../data/site";
+
+// shapes: one outline path each (flat bottom, round lobes) plus a little inner curl.
+// px / py: the top of the highest lobe, as % of the shape's width / height (the bird's perch)
+const shapes = {
+  a: {
+    box: "0 0 120 60",
+    body: "M14 50A10 10 0 0 1 18 32A14 14 0 0 1 42 20A18 18 0 0 1 76 18A13 13 0 0 1 98 30A10 10 0 0 1 106 50Z",
+    curl: "M58 38a9 9 0 0 0 13-5",
+    px: 49,
+    py: 11,
+  },
+  b: {
+    box: "0 0 90 56",
+    body: "M12 46A9 9 0 0 1 20 30A15 15 0 0 1 48 18A14 14 0 0 1 74 32A8 8 0 0 1 78 46Z",
+    curl: "M40 37a8 8 0 0 0 11-5",
+    px: 38,
+    py: 16,
+  },
+  c: {
+    box: "0 0 150 44",
+    body: "M14 36A8 8 0 0 1 24 24A12 12 0 0 1 46 16A14 14 0 0 1 74 12A12 12 0 0 1 98 16A11 11 0 0 1 118 22A9 9 0 0 1 136 36Z",
+    curl: "M80 28a8 8 0 0 0 11-4",
+    px: 40,
+    py: 0,
+  },
+} as const;
+
+// x: % across (clamped so the whole cloud stays inside the frame), y: vh from the
+// viewport centre when the scatter is centred, d: speed relative to the scatter
+// (>1 nearer, <1 further), w: width in px, dx: sideways drift in vw over the pass,
+// flip: mirror the shape, m: also shown on phones
+const clouds: { s: keyof typeof shapes; x: number; y: number; d: number; w: number; dx: number; flip?: boolean; m?: boolean }[] = [
+  { s: "a", x: 12, y: -52, d: 1.0, w: 170, dx: 2, m: true },
+  { s: "b", x: 70, y: -58, d: 1.1, w: 110, dx: -2, flip: true },
+  { s: "c", x: 40, y: -34, d: 0.95, w: 190, dx: 2, m: true },
+  { s: "b", x: 88, y: -24, d: 1.15, w: 130, dx: -2, m: true },
+  { s: "a", x: 22, y: -6, d: 1.05, w: 200, dx: 1, flip: true },
+  { s: "c", x: 64, y: 2, d: 0.92, w: 160, dx: -1, flip: true, m: true },
+  { s: "b", x: 8, y: 22, d: 1.12, w: 100, dx: 2 },
+  { s: "a", x: 82, y: 26, d: 1.0, w: 180, dx: -2, m: true },
+  { s: "c", x: 34, y: 40, d: 1.08, w: 150, dx: 2 },
+  { s: "b", x: 58, y: 54, d: 0.95, w: 120, dx: -1, flip: true, m: true },
+  { s: "a", x: 92, y: 60, d: 1.18, w: 140, dx: -2 },
+];
+// idle clocks: every cloud bobs, and drifts slowly sideways, on its own period and phase,
+// so they never move in step. roam: how far it drifts each way (px), alternating direction
+const vars = (c: (typeof clouds)[number], i: number) =>
+  [
+    `--x:${c.x}%`,
+    `--y:${c.y}vh`,
+    `--d:${c.d}`,
+    `--w:${c.w}px`,
+    `--dx:${c.dx}vw`,
+    `--flip:${c.flip ? -1 : 1}`,
+    `--px:${shapes[c.s].px}%`,
+    `--py:${shapes[c.s].py}%`,
+    `--bob:${(5 + ((i * 1.37) % 3)).toFixed(2)}s`,
+    `--drift:${(14 + ((i * 3.1) % 9)).toFixed(2)}s`,
+    `--roam:${(i % 2 ? -1 : 1) * (24 + ((i * 7) % 25))}px`,
+    `--lag:${(-((i * 1.9) % 7)).toFixed(2)}s`,
+    `--lag2:${(-((i * 4.3) % 14)).toFixed(2)}s`,
+  ].join(";");
+---
+
+<div class="sky" aria-hidden="true">
+  {
+    clouds.map((c, i) => (
+      <div class:list={["cloud", { m: c.m }]} style={vars(c, i)}>
+        <svg class="shape" viewBox={shapes[c.s].box}>
+          <path class="body" d={shapes[c.s].body} vector-effect="non-scaling-stroke" />
+          <path class="curl" d={shapes[c.s].curl} vector-effect="non-scaling-stroke" />
+        </svg>
+      </div>
+    ))
+  }
+
+  <!-- the bird. The script moves this nest into a cloud; the perch sits behind the cloud
+       and is clipped at the cloud's middle, so the bird only ever shows above the top lobe -->
+  <div class="nest" data-says={JSON.stringify(site.birdSays)}>
+    <div class="perch">
+      <div class="bird">
+        <span class="tuft"></span>
+        <span class="cheek l"></span>
+        <span class="cheek r"></span>
+        <span class="eye l"><i></i></span>
+        <span class="eye r"><i></i></span>
+        <span class="beak-lo"></span>
+        <span class="beak-up"></span>
+      </div>
+    </div>
+    <span class="bubble display"></span>
+  </div>
+</div>
+
+<style>
+  .sky {
+    --t: -1; /* set by motion.ts */
+    /* the scatter travels from fully below the viewport (t = -1) to fully above it (t = 1) */
+    --travel: 125vh;
+    --cloud-fill: var(--paper-2);
+    --cloud-line: #c9b892;
+    position: sticky;
+    top: -32px;
+    z-index: 0;
+    height: calc(100vh + 64px);
+    margin-bottom: calc(-100vh - 64px);
+    overflow: hidden;
+    pointer-events: none;
+  }
+  /* follow the frame's live tint: a lighter fill, a line of ink softened into the tint */
+  @supports (color: color-mix(in oklab, red 50%, blue)) {
+    .sky {
+      --cloud-fill: color-mix(in oklab, var(--bg, var(--paper)), #fff 50%);
+      --cloud-line: color-mix(in oklab, var(--ink) 28%, var(--bg, var(--paper)));
+    }
+  }
+
+  /* ── clouds ── */
+  .cloud {
+    --k: 1; /* drift scale: less room on phones */
+    --edge: calc(var(--w) / 2 + 3vw + 48px * var(--k)); /* room for the widest drift */
+    position: absolute;
+    left: clamp(var(--edge), var(--x), calc(100% - var(--edge)));
+    top: calc(50% + var(--y));
+    width: var(--w);
+    transform: translate(-50%, -50%)
+      translate(calc(var(--t) * var(--dx)), calc(var(--t) * var(--travel) * var(--d) * -1));
+    /* idle: a small bob, plus a slow drift sideways, added on top of each other */
+    animation:
+      cloud-bob var(--bob) ease-in-out var(--lag) infinite alternate,
+      cloud-drift var(--drift) ease-in-out var(--lag2) infinite alternate;
+    animation-composition: replace, add;
+    will-change: transform;
+  }
+  /* nothing to see between passes: rest the clocks */
+  .sky.away .cloud {
+    animation-play-state: paused;
+  }
+  @keyframes cloud-bob {
+    from {
+      translate: 0 -3px;
+    }
+    to {
+      translate: 0 3px;
+    }
+  }
+  @keyframes cloud-drift {
+    from {
+      translate: calc(var(--roam) * var(--k) * -1) 0;
+    }
+    to {
+      translate: calc(var(--roam) * var(--k)) 0;
+    }
+  }
+  .shape {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    transform: scaleX(var(--flip));
+  }
+  .body {
+    fill: var(--cloud-fill);
+    stroke: var(--cloud-line);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+  .curl {
+    fill: none;
+    stroke: var(--cloud-line);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  /* ── the bird ── */
+  .nest {
+    /* no transform or z-index here: the perch must layer inside the cloud, behind its shape */
+    position: absolute;
+    inset: 0;
+    --at: calc(50% + (var(--px) - 50%) * var(--flip)); /* the perch, mirrored with the shape */
+  }
+  .sky > .nest {
+    display: none;
+  }
+  .perch {
+    position: absolute;
+    z-index: -1; /* behind the cloud shape */
+    left: var(--at);
+    margin-left: -20px;
+    width: 40px;
+    top: calc(var(--py) - 26px); /* peeping: the head clears the lobe, the body stays behind it */
+    bottom: 30%;
+    /* clipped at the cloud's middle only: eyes, tuft and head tilt may spill out the other sides */
+    clip-path: inset(-40px -30px 0 -30px);
+  }
+  .bird {
+    position: absolute;
+    left: 0;
+    top: 100%; /* hidden: below the clip */
+    width: 40px;
+    height: 64px;
+    background: var(--yellow);
+    border: var(--bw) solid var(--ink);
+    border-radius: 20px 20px 10px 10px;
+    transform-origin: 50% 75%;
+  }
+  .eye {
+    position: absolute;
+    top: -9px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    --in: 2px;
+  }
+  .eye.r {
+    top: -7px;
+    left: 18px;
+    width: 15px;
+    height: 15px;
+    --in: -2px;
+  }
+  /* googly: mismatched pupils, a little cross-eyed at rest */
+  .eye i {
+    width: 6px;
+    height: 6px;
+    background: var(--ink);
+    border-radius: 50%;
+    translate: var(--in) 1px;
+  }
+  .eye.r i {
+    width: 5px;
+    height: 5px;
+  }
+  .beak-up,
+  .beak-lo {
+    position: absolute;
+    background: var(--orange);
+    border: 2px solid var(--ink);
+  }
+  .beak-up {
+    left: 12px;
+    top: 9px;
+    width: 11px;
+    height: 8px;
+    border-radius: 3px 3px 50% 50% / 3px 3px 100% 100%;
+  }
+  .beak-lo {
+    left: 14px;
+    top: 13px;
+    width: 7px;
+    height: 6px;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  }
+  .cheek {
+    position: absolute;
+    top: 12px;
+    width: 7px;
+    height: 4px;
+    background: var(--pink);
+    border-radius: 50%;
+  }
+  .cheek.l {
+    left: 2px;
+  }
+  .cheek.r {
+    right: 2px;
+  }
+  /* two stray head feathers */
+  .tuft {
+    position: absolute;
+    left: 50%;
+    top: -23px;
+  }
+  .tuft::before,
+  .tuft::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 13px;
+    border: 2.5px solid transparent;
+    border-left-color: var(--ink);
+    border-radius: 50%;
+  }
+  .tuft::before {
+    left: -6px;
+    rotate: 20deg;
+  }
+  .tuft::after {
+    left: -1px;
+    top: 2px;
+    rotate: -15deg;
+  }
+  .bubble {
+    position: absolute;
+    left: calc(var(--at) + 24px);
+    top: calc(var(--py) - 50px);
+    padding: 3px 9px 2px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: var(--pill);
+    rotate: -6deg;
+    scale: 0;
+    transform-origin: 0 100%;
+  }
+  .nest.left .bubble {
+    left: calc(var(--at) - 24px);
+    translate: -100% 0;
+    rotate: 6deg;
+    transform-origin: 100% 100%;
+  }
+
+  /* one peep, about four seconds: pop up, look left, look right, stare at you, duck */
+  .nest.peep .bird {
+    animation:
+      bird-rise 4s both,
+      bird-tilt 4s both;
+  }
+  .nest.peep .eye i {
+    animation: bird-look 4s both;
+  }
+  .nest.peep .eye {
+    animation: bird-blink 4s both;
+  }
+  .nest.peep.talk .beak-lo {
+    animation: bird-talk 4s both;
+  }
+  .nest.peep.talk .bubble {
+    animation: bird-say 4s both;
+  }
+  @keyframes bird-rise {
+    0% {
+      top: 100%;
+      animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    11% {
+      top: -3px;
+      animation-timing-function: ease-in-out;
+    }
+    16% {
+      top: 6px;
+    }
+    20%,
+    84% {
+      top: 4px;
+      animation-timing-function: ease-out;
+    }
+    88% {
+      top: 0;
+      animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5);
+    }
+    100% {
+      top: 100%;
+    }
+  }
+  @keyframes bird-tilt {
+    0%,
+    24% {
+      rotate: 0deg;
+    }
+    30%,
+    44% {
+      rotate: -9deg;
+    }
+    51%,
+    62% {
+      rotate: 8deg;
+    }
+    68%,
+    100% {
+      rotate: 0deg;
+    }
+  }
+  @keyframes bird-look {
+    0%,
+    24% {
+      translate: var(--in) 1px;
+    }
+    29%,
+    44% {
+      translate: -3px 0;
+    }
+    50%,
+    62% {
+      translate: 3px 0;
+    }
+    67%,
+    100% {
+      translate: 0 1px;
+    }
+  }
+  @keyframes bird-blink {
+    0%,
+    36% {
+      scale: 1;
+    }
+    38% {
+      scale: 1 0.1;
+    }
+    40%,
+    64% {
+      scale: 1;
+    }
+    68%,
+    80% {
+      scale: 1.2;
+    }
+    84%,
+    100% {
+      scale: 1;
+    }
+  }
+  @keyframes bird-talk {
+    0%,
+    69% {
+      translate: 0 0;
+    }
+    71% {
+      translate: 0 4px;
+    }
+    73% {
+      translate: 0 0;
+    }
+    75% {
+      translate: 0 4px;
+    }
+    78%,
+    100% {
+      translate: 0 0;
+    }
+  }
+  @keyframes bird-say {
+    0%,
+    69% {
+      scale: 0;
+    }
+    72% {
+      scale: 1.12;
+    }
+    74%,
+    82% {
+      scale: 1;
+    }
+    85%,
+    100% {
+      scale: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .cloud {
+      --k: 0.5;
+      --edge: calc(var(--w) * 0.375 + 3vw + 48px * var(--k));
+      display: none;
+      width: calc(var(--w) * 0.75);
+    }
+    .cloud.m {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  // Every so often, the bird peeps out from behind a cloud that's on screen and not
+  // covered by content. Never under reduced motion (the whole sky is hidden then).
+  const sky = document.querySelector<HTMLElement>(".sky");
+  const nest = sky?.querySelector<HTMLElement>(".nest");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (sky && nest && !reduced) {
+    const perch = nest.querySelector<HTMLElement>(".perch")!;
+    const bubble = nest.querySelector<HTMLElement>(".bubble")!;
+    const says = JSON.parse(nest.dataset.says ?? "[]") as string[];
+    const clouds = [...sky.querySelectorAll<HTMLElement>(".cloud")];
+    const PEEP = 4000; // ms, matches the CSS
+    let timer = 0;
+    const later = (ms: number) => {
+      clearTimeout(timer);
+      timer = window.setTimeout(tryPeep, ms);
+    };
+
+    // open sky at (x, y): on screen, and only page background in front of it
+    const open = (x: number, y: number) => {
+      if (x < 12 || x > innerWidth - 12 || y < 12 || y > innerHeight - 12) return false;
+      const el = document.elementFromPoint(x, y);
+      return !!el && el.matches(".frame, main, section, .wrap, .hero, .side, .lanes, .tiles, .steps, .bio, .story, ol, ul");
+    };
+
+    function tryPeep() {
+      if (document.hidden || sky!.classList.contains("away")) return later(1500);
+      const pool = clouds.filter((c) => c.offsetWidth > 0).sort(() => Math.random() - 0.5);
+      for (const cloud of pool) {
+        cloud.append(nest!);
+        const p = perch.getBoundingClientRect();
+        const head = p.top - 16; // tuft and eyes poke above the perch
+        if (!open(p.left + p.width / 2, head) || !open(p.left, p.top + 12) || !open(p.right, p.top + 12)) continue;
+
+        // say something, half the time, on whichever side has room
+        const left = p.left + p.width / 2 > innerWidth / 2;
+        nest!.classList.toggle("left", left);
+        const talk = says.length > 0 && Math.random() < 0.5 && open(left ? p.left - 60 : p.right + 60, head - 12);
+        if (talk) bubble.textContent = says[Math.floor(Math.random() * says.length)];
+        nest!.classList.toggle("talk", talk);
+
+        nest!.classList.add("peep");
+        window.setTimeout(() => {
+          nest!.classList.remove("peep");
+          later(7000 + Math.random() * 9000);
+        }, PEEP + 100);
+        return;
+      }
+      later(1500);
+    }
+
+    later(3500);
+  }
+</script>

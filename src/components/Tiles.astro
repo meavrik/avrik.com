@@ -1,0 +1,141 @@
+---
+import { site } from "../data/site";
+import Icon from "./Icon.astro";
+const words = [...site.marquee, ...site.marquee];
+const fills = ["orange", "blue", "pink", "yellow", "teal", "green"];
+const laneName = { dev: "Dev teams", biz: "Small business" } as const;
+---
+
+<section class="section" id="what">
+  <div class="wrap">
+    <h2 class="section-title reveal">{site.what.title}</h2>
+    <p class="sub reveal">{site.what.sub}</p>
+    <ul class="tiles">
+      {
+        site.tiles.map((t, i) => (
+          <li class="tile box press reveal" style={`--i:${i};--fill:var(--${fills[i % fills.length]})`}>
+            <span class="mark">
+              <Icon name={t.icon} size={26} />
+            </span>
+            <span class="txt">
+              <b>{t.label}</b>
+              <small class="label">{laneName[t.lane as keyof typeof laneName]}</small>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- the only continuous motion on the page -->
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      {words.map((w) => <span>{w}</span>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-title {
+    max-width: 16ch;
+    margin-bottom: 20px;
+  }
+  .sub {
+    font-size: var(--step-1);
+    max-width: 52ch;
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+  .tiles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(12px, 2vw, 20px);
+  }
+  .tile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--fill);
+    border-radius: var(--pill);
+  }
+  .mark {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+  }
+  .mark :global(.ico) {
+    stroke-width: 3.5;
+    transform-origin: 40% 60%;
+  }
+  .txt {
+    display: grid;
+    gap: 2px;
+    line-height: 1.1;
+  }
+  .txt b {
+    font-family: var(--display);
+    font-weight: 900;
+    font-stretch: 112%;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .txt small {
+    opacity: 0.75;
+    font-size: 0.68rem;
+  }
+
+  .marquee {
+    margin-top: var(--space);
+    border-block: var(--bw) solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    overflow: hidden;
+    padding: 14px 0;
+  }
+  .track {
+    display: flex;
+    gap: 48px;
+    width: max-content;
+    font-family: var(--display);
+    font-weight: 900;
+    font-stretch: 112%;
+    text-transform: uppercase;
+    font-size: var(--step-3);
+    white-space: nowrap;
+    animation: slide 40s linear infinite;
+  }
+  .track span::after {
+    content: "✦";
+    margin-left: 48px;
+    color: var(--yellow);
+  }
+  @keyframes slide {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (max-width: 860px) {
+    .tiles {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .tiles {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+</style>
