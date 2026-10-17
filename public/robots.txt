@@ -1,0 +1,6 @@
+# Everyone is welcome, AI crawlers included (GPTBot, ClaudeBot, PerplexityBot, Google-Extended…):
+# being quotable by answer engines is the point.
+User-agent: *
+Allow: /
+
+Sitemap: https://avrik.com/sitemap.xml

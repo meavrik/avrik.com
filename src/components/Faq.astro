@@ -1,0 +1,146 @@
+---
+import { getSite } from "../i18n";
+const site = getSite(Astro.currentLocale);
+const { faq } = site;
+const marks = ["orange", "blue", "pink", "yellow", "teal", "green"];
+// the same questions as FAQPage data, so search and AI answer engines can quote them
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  inLanguage: site.lang.code,
+  mainEntity: faq.items.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<!-- the title on the reading side, the questions beside it; native <details>, so every answer
+     is in the HTML and opens without JS -->
+<section class="section wrap" id="faq">
+  <div class="faq">
+    <div class="head">
+      <span class="label reveal">{faq.label}</span>
+      <h2 class="section-title reveal" style="--i:1">{faq.title}</h2>
+    </div>
+    <div class="list">
+      {
+        faq.items.map((f, i) => (
+          <details class="item reveal" style={`--i:${i};--mark:var(--${marks[i % marks.length]})`}>
+            <summary>
+              <h3>{f.q}</h3>
+              <span class="mark" aria-hidden="true" />
+            </summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+</section>
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    gap: clamp(24px, 5vw, 72px);
+    align-items: start;
+  }
+  .head {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    position: sticky;
+    top: 110px;
+  }
+  .section-title {
+    margin-bottom: 0;
+    max-width: 10ch;
+  }
+  .list {
+    display: grid;
+    gap: 12px;
+  }
+  .item {
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--r);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 20px;
+    padding-inline-start: 24px;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  h3 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+  /* a coloured button with a plus that turns into a cross when the answer is open */
+  .mark {
+    position: relative;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    background: var(--mark);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+    transition: rotate var(--base) var(--ease);
+  }
+  .mark::before,
+  .mark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 14px;
+    height: 3px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+  .mark::after {
+    rotate: 90deg;
+  }
+  .item[open] .mark {
+    rotate: 45deg;
+  }
+  @media (hover: hover) {
+    summary:hover .mark {
+      scale: 1.08;
+    }
+  }
+  p {
+    padding: 0 24px 22px;
+    max-width: 60ch;
+    font-size: var(--step-0);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 860px) {
+    .faq {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .head {
+      position: static;
+    }
+    .section-title {
+      max-width: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mark {
+      transition: none;
+    }
+  }
+</style>

@@ -2,13 +2,59 @@
 import "../styles/global.css";
 import Sky from "../components/Sky.astro";
 import Critters from "../components/Critters.astro";
-import { getSite, locales, localeHref } from "../i18n";
+import { getSite, locales, localeHref, sites } from "../i18n";
 const site = getSite(Astro.currentLocale);
+const other = site.lang.code === "he" ? sites.en : sites.he;
 const { title = site.title, description = site.description } = Astro.props;
 const origin = `https://${site.domain}`;
 const url = new URL(Astro.url.pathname, origin).href;
 // the same page in every language, for hreflang
 const alternates = locales.map((l) => ({ l, href: new URL(localeHref(l, Astro.url.pathname), origin).href }));
+const ogLocale = (code: string) => (code === "he" ? "he_IL" : "en_US");
+const image = new URL(site.ogImage, origin).href;
+
+// structured data for search and AI answer engines: who Avrik is, and the services as an
+// offer catalog, one catalog per lane. The ids are shared by both languages, so the English
+// and Hebrew pages describe the same person
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${origin}/#website`,
+      url: `${origin}/`,
+      name: site.fullName,
+      description: site.description,
+      inLanguage: locales,
+      publisher: { "@id": `${origin}/#person` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${origin}/#person`,
+      name: site.fullName,
+      alternateName: other.fullName,
+      jobTitle: site.role,
+      description: site.description,
+      url: `${origin}/`,
+      email: `mailto:${site.email}`,
+      sameAs: [site.linkedin, site.github],
+      knowsLanguage: locales,
+      knowsAbout: site.tiles.map((t) => t.label),
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: site.what.title,
+        itemListElement: site.lanes.map((lane) => ({
+          "@type": "OfferCatalog",
+          name: lane.title,
+          description: lane.line,
+          itemListElement: site.tiles
+            .filter((t) => t.lane === lane.id)
+            .map((t) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: t.label, description: t.detail } })),
+        })),
+      },
+    },
+  ],
+};
 // one font pair per language: the Latin faces have no Hebrew (see tokens.css).
 // probe: the face the intro waits for before it runs
 const fonts =
@@ -30,14 +76,23 @@ const fonts =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href={url} />
     {alternates.map((a) => <link rel="alternate" hreflang={a.l} href={a.href} />)}
     <link rel="alternate" hreflang="x-default" href={alternates[0].href} />
+    <meta property="og:site_name" content={site.fullName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={url} />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content={site.lang.code === "he" ? "he_IL" : "en_US"} />
+    <meta property="og:locale" content={ogLocale(site.lang.code)} />
+    <meta property="og:locale:alternate" content={ogLocale(other.lang.code)} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <meta name="theme-color" content="#161616" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -62,17 +117,7 @@ const fonts =
         }
       })();
     </script>
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Person",
-        name: site.fullName,
-        url: origin,
-        jobTitle: site.role,
-        sameAs: [site.linkedin, site.github],
-      })}
-    />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
     <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${site.ga}`}></script>
     <script is:inline define:vars={{ ga: site.ga }}>
       window.dataLayer = window.dataLayer || [];

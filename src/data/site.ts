@@ -24,9 +24,11 @@ export const site = {
   fullName: "Avrik Berman",
   role: "AI process integrator",
   domain: "avrik.com",
-  title: "Avrik — AI process integrator",
+  // the page title and meta description: what search results and link previews show
+  title: "Avrik Berman — AI automation for dev and business teams",
   description:
-    "I integrate AI into how your team already works. Dev pipelines or the office. Avrik Berman, AI process integrator.",
+    "AI process integrator. I build AI into how your team already works: AI code review, agentic workflows, document automation and draft replies.",
+  ogImage: "/og.png", // the 1200×630 share card, in public/
   ga: "G-MY005Y2GEJ",
 
   // ── contact ──
@@ -292,6 +294,43 @@ export const site = {
       alt: "Cartoon of Avrik: curly hair on top with short sides, big eyes, stubble, a hint of a smile, a plain T-shirt, and a small yellow bird nesting in his hair.",
       sticker: "Actual photo",
     },
+  },
+
+  // ── faq: plain questions and answers, for people and for search and AI answer engines.
+  // The answers only promise what the rest of the site already does ──
+  faq: {
+    label: "FAQ",
+    title: "Fair questions.",
+    items: [
+      {
+        q: "What does an AI process integrator do?",
+        a: "I find the repetitive, manual work in how your team operates, then build AI into the tools you already use to take it over. You keep the people, the judgement and the final say.",
+      },
+      {
+        q: "Who is this for?",
+        a: "Dev teams that want agents in their pipeline, and business teams that want the busywork gone. Company size doesn't matter; the repetitive work does.",
+      },
+      {
+        q: "How soon will we see results?",
+        a: "The pilot is one workflow over two weeks, measured in time and money saved. You know whether it works before you commit to more.",
+      },
+      {
+        q: "Will AI replace my team?",
+        a: "No. AI drafts, sorts and checks; a person reviews and approves. On anything that matters, a human stays in the loop.",
+      },
+      {
+        q: "Which AI tools do you use?",
+        a: "Whatever fits your stack. For dev teams that's usually Claude, Cursor or Copilot inside your repo; for business teams, AI wired into the email, files and tools you already have.",
+      },
+      {
+        q: "Is our data safe?",
+        a: "It runs in your own accounts, under your control, with permissions for who can ask what and a log of every answer.",
+      },
+      {
+        q: "Do we keep what you build?",
+        a: "Yes. The automations, rules and templates live in your accounts and repos, and your team learns to tune them. No lock-in.",
+      },
+    ],
   },
 
   talk: {
