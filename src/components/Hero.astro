@@ -1,9 +1,14 @@
 ---
-import { site } from "../data/site";
+import { getSite } from "../i18n";
 import Icon from "./Icon.astro";
+const site = getSite(Astro.currentLocale);
 const { hero } = site;
 // 8 petals around the badge centre
 const petals = Array.from({ length: 8 }, (_, i) => i * 45);
+// the ring: Chrome cannot lay right-to-left text along a path, so a Hebrew badge is handed over
+// in visual order (reversed, Latin runs kept whole) and drawn as if left to right, see .ring
+const rtl = site.lang.dir === "rtl";
+const badge = rtl ? (hero.badge.match(/[A-Za-z0-9]+|./gu) ?? []).reverse().join("") : hero.badge;
 ---
 
 <section class="hero wrap" id="top">
@@ -25,7 +30,7 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
       </defs>
       <circle cx="80" cy="80" r="78" class="disc" />
       <text class="ring" textLength="376" lengthAdjust="spacing">
-        <textPath href="#ring">{hero.badge}</textPath>
+        <textPath href="#ring">{badge}</textPath>
       </text>
       <g class="flower">
         {petals.map((a) => <ellipse cx="80" cy="52" rx="9" ry="15" transform={`rotate(${a} 80 80)`} />)}
@@ -59,11 +64,18 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     padding-block: clamp(40px, 7vw, 104px) var(--space);
   }
   h1 {
+    --rise: 1.4em; /* how far a line travels in and out of its clip window */
     font-size: var(--step-hero);
     letter-spacing: -0.03em;
     word-spacing: normal; /* the size above is tuned to the widest line; extra word space would overflow it */
     display: grid;
     justify-items: start;
+  }
+  /* Hebrew: no tight tracking (the letters touch), and a longer travel so lamed and the
+     final letters, which reach further up and down, stay clipped until their line rises */
+  :global([dir="rtl"]) h1 {
+    --rise: 1.6em;
+    letter-spacing: 0;
   }
   /* each line is a clip window (vertical only); its text rises into view from below.
      padding gives the squiggle room inside the clip, the negative margin hands
@@ -80,7 +92,7 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     white-space: nowrap;
   }
   :global(.js) .txt {
-    transform: translateY(1.4em);
+    transform: translateY(var(--rise));
   }
   :global(.ready) .txt {
     animation: hero-lift 760ms var(--ease-out) both;
@@ -98,6 +110,9 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     -webkit-text-stroke: max(var(--bw), 0.035em) var(--ink);
     letter-spacing: -0.01em;
   }
+  :global([dir="rtl"]) .outline .txt {
+    letter-spacing: 0;
+  }
 
   /* marked line: an orange marker squiggle draws itself under the text */
   .mark .txt::after {
@@ -112,6 +127,10 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
   }
   :global(.js) .mark .txt::after {
     clip-path: inset(0 100% 0 0);
+  }
+  /* the squiggle draws along the reading direction */
+  :global(.js[dir="rtl"]) .mark .txt::after {
+    clip-path: inset(0 0 0 100%);
   }
   :global(.ready) .mark .txt::after {
     animation: hero-draw 640ms var(--ease-out) both;
@@ -139,15 +158,15 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     content: attr(data-next);
     position: absolute;
     top: 0;
-    left: 0;
-    transform: translateY(1.4em);
+    inset-inline-start: 0;
+    transform: translateY(var(--rise));
   }
   @keyframes hero-roll {
     from {
       transform: translateY(0);
     }
     to {
-      transform: translateY(-1.4em);
+      transform: translateY(calc(-1 * var(--rise)));
     }
   }
   /* the squiggle stays drawn while its line rolls out, then redraws under the new text */
@@ -188,15 +207,14 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     justify-items: start;
   }
   .kicker {
-    font-size: clamp(1.35rem, 2vw, 1.7rem);
+    font-size: clamp(1.05rem, 1.75vw, 1.55rem); /* the floor keeps the longest line whole beside the badge on narrow laptops */
     display: grid;
-    margin-left: 86px;
+    margin-inline-start: 86px;
     min-height: 96px;
     align-content: center;
   }
   .rule {
-    width: 100%;
-    margin-left: 86px;
+    margin-inline-start: 86px;
     width: calc(100% - 86px);
   }
   .sub {
@@ -204,11 +222,11 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     max-width: 36ch;
   }
 
-  /* badge straddles the panel's top-left corner */
+  /* badge straddles the panel's top corner, on the side the text starts from */
   .badge {
     position: absolute;
     top: -34px;
-    left: -72px;
+    inset-inline-start: -72px;
     width: 156px;
     z-index: 2;
   }
@@ -240,6 +258,14 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     fill: var(--ink);
     transform-origin: 80px 80px;
     animation: spin 28s linear infinite;
+  }
+  /* Hebrew: the text comes pre-reversed (see the frontmatter), so it is drawn glyph by glyph
+     left to right and reads right to left over the top; the ring turns the way it reads */
+  :global([dir="rtl"]) .ring {
+    direction: ltr;
+    unicode-bidi: bidi-override;
+    letter-spacing: 0.06em;
+    animation-direction: reverse;
   }
   .flower ellipse {
     fill: var(--orange);
@@ -276,17 +302,17 @@ const petals = Array.from({ length: 8 }, (_, i) => i * 45);
     }
     .badge {
       top: -44px;
-      left: auto;
-      right: 14px;
+      inset-inline-start: auto;
+      inset-inline-end: 14px;
       width: 124px;
     }
     .kicker,
     .rule {
-      margin-left: 0;
+      margin-inline-start: 0;
       width: 100%;
     }
     .kicker {
-      padding-right: 110px;
+      padding-inline-end: 110px;
     }
   }
   @media (prefers-reduced-motion: reduce) {

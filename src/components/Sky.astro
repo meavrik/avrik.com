@@ -8,7 +8,8 @@
 // taken from the current tint so they stay quiet: a lighter fill, a softened ink line.
 // Each one bobs a little and drifts slowly sideways on its own clock. Now and then a bird peeps out from
 // behind one of them (the script at the bottom).
-import { site } from "../data/site";
+import { getSite } from "../i18n";
+const site = getSite(Astro.currentLocale);
 
 // shapes: one outline path each (flat bottom, round lobes) plus a little inner curl.
 // px / py: the top of the highest lobe, as % of the shape's width / height (the bird's perch)

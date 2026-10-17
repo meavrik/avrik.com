@@ -1,0 +1,25 @@
+---
+// the Hebrew home page: the same sections; every component picks its copy from Astro.currentLocale
+import Base from "../../layouts/Base.astro";
+import Nav from "../../components/Nav.astro";
+import Hero from "../../components/Hero.astro";
+import Lanes from "../../components/Lanes.astro";
+import Tiles from "../../components/Tiles.astro";
+import Steps from "../../components/Steps.astro";
+import Bio from "../../components/Bio.astro";
+import Contact from "../../components/Contact.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<Base>
+  <Nav />
+  <main>
+    <Hero />
+    <Lanes />
+    <Tiles />
+    <Steps />
+    <Bio />
+    <Contact />
+  </main>
+  <Footer />
+</Base>

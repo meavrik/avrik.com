@@ -1,7 +1,7 @@
 // Five things, nothing else:
 // 1. measure icon strokes so they can draw themselves
 // 2. one staggered reveal per section (IntersectionObserver)
-// 3. hero sticker tilts with the cursor
+// 3. lane illustrations tilt with the cursor
 // 4. marquee is pure CSS; nothing to do here
 // 5. sky: the frame's tint follows the section in view, clouds roll through at each boundary
 
@@ -34,26 +34,27 @@ if (reduced || !("IntersectionObserver" in window)) {
   reveals.forEach((r) => io.observe(r));
 }
 
-// 3 — hero tilt (pointer only, never on touch, never with reduced motion)
-const tilt = document.querySelector<HTMLElement>("[data-tilt]");
-if (tilt && !reduced && matchMedia("(hover: hover) and (pointer: fine)").matches) {
-  const sticker = tilt.querySelector<HTMLElement>(".sticker")!;
-  const max = 7;
-  let raf = 0;
-  tilt.addEventListener("pointermove", (ev) => {
-    const r = tilt.getBoundingClientRect();
-    const x = (ev.clientX - r.left) / r.width - 0.5;
-    const y = (ev.clientY - r.top) / r.height - 0.5;
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(() => {
-      sticker.style.setProperty("--ry", `${x * max * 2}deg`);
-      sticker.style.setProperty("--rx", `${-y * max * 2}deg`);
+// 3 — lane illustrations tilt with the cursor (pointer only, never on touch, never with reduced motion)
+if (!reduced && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  for (const tilt of document.querySelectorAll<HTMLElement>("[data-tilt]")) {
+    const scene = tilt.querySelector<SVGElement>(".scene")!;
+    const max = 7;
+    let raf = 0;
+    tilt.addEventListener("pointermove", (ev) => {
+      const r = tilt.getBoundingClientRect();
+      const x = (ev.clientX - r.left) / r.width - 0.5;
+      const y = (ev.clientY - r.top) / r.height - 0.5;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        scene.style.setProperty("--ry", `${x * max * 2}deg`);
+        scene.style.setProperty("--rx", `${-y * max * 2}deg`);
+      });
     });
-  });
-  tilt.addEventListener("pointerleave", () => {
-    sticker.style.setProperty("--ry", "0deg");
-    sticker.style.setProperty("--rx", "0deg");
-  });
+    tilt.addEventListener("pointerleave", () => {
+      scene.style.setProperty("--ry", "0deg");
+      scene.style.setProperty("--rx", "0deg");
+    });
+  }
 }
 
 // 5 — sky. Every section boundary gets a pass: a stretch of scroll that starts as the

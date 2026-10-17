@@ -1,7 +1,8 @@
 ---
 // One panel per team, opened from that lane's call to action (see Lanes.astro).
 // Left: the team's common problems as tabs. Right: the road out of the selected one.
-import { site } from "../data/site";
+import { getSite } from "../i18n";
+const site = getSite(Astro.currentLocale);
 const { roadmap } = site;
 const teams = ["dev", "biz"] as const;
 ---
@@ -13,8 +14,8 @@ const teams = ["dev", "biz"] as const;
       return (
         <div class="team" data-team-panel={team} hidden={team !== "dev"}>
           <div class="head">
-            <span class="label pill">Road map — {t.title}</span>
-            <button class="close" type="button" data-roadmap-close aria-label="Close the road map">
+            <span class="label pill">{roadmap.label} — {t.title}</span>
+            <button class="close" type="button" data-roadmap-close aria-label={roadmap.close}>
               ✕
             </button>
           </div>
@@ -25,7 +26,7 @@ const teams = ["dev", "biz"] as const;
               class="problems"
               role="tablist"
               aria-orientation="vertical"
-              aria-label={`${t.title}: common problems`}
+              aria-label={t.title}
             >
               {t.problems.map((p, i) => (
                 <button
@@ -39,7 +40,7 @@ const teams = ["dev", "biz"] as const;
                 >
                   <span class="label n">{String(i + 1).padStart(2, "0")}</span>
                   <span class="t">{p.title}</span>
-                  <span class="arr" aria-hidden="true">
+                  <span class="arr mirror" aria-hidden="true">
                     →
                   </span>
                 </button>
@@ -154,7 +155,7 @@ const teams = ["dev", "biz"] as const;
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    text-align: left;
+    text-align: start;
     font: inherit;
     font-weight: 500;
     line-height: 1.25;
@@ -216,7 +217,7 @@ const teams = ["dev", "biz"] as const;
   .stop:not(:last-child)::before {
     content: "";
     position: absolute;
-    left: 20px;
+    inset-inline-start: 20px;
     top: 44px;
     bottom: -22px;
     border-left: 3px dashed var(--ink);
@@ -255,7 +256,8 @@ const teams = ["dev", "biz"] as const;
   .outcome {
     display: inline-grid;
     gap: 4px;
-    margin: 28px 0 0 60px;
+    margin: 28px 0 0;
+    margin-inline-start: 60px;
     padding: 14px 18px;
     max-width: 40ch;
     font-weight: 500;
@@ -263,6 +265,9 @@ const teams = ["dev", "biz"] as const;
     border: var(--bw) solid var(--ink);
     border-radius: var(--r);
     transform: rotate(-1.5deg);
+  }
+  :global([dir="rtl"]) .outcome {
+    transform: rotate(1.5deg);
   }
 
   /* replay the road whenever a problem is picked */
@@ -301,7 +306,7 @@ const teams = ["dev", "biz"] as const;
       grid-template-columns: 1fr;
     }
     .outcome {
-      margin-left: 0;
+      margin-inline-start: 0;
     }
   }
   @media (prefers-reduced-motion: reduce) {

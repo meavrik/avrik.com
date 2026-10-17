@@ -1,30 +1,85 @@
 ---
-import { site } from "../data/site";
+import { getSite } from "../i18n";
 import Icon from "./Icon.astro";
+const site = getSite(Astro.currentLocale);
 const words = [...site.marquee, ...site.marquee];
 const fills = ["orange", "blue", "pink", "yellow", "teal", "green"];
-const laneName = { dev: "Dev teams", biz: "Small business" } as const;
+
+// The services as playing cards: one hand per lane, held in a fan. Dev holds spades, biz
+// hearts, and each hand runs A K Q J 10 (a royal flush, if anyone is counting).
+// Picking a card turns it over to its one-line detail.
+const suits = {
+  spade:
+    "M12 2s-8 6.2-8 11.2C4 16 6 18 8.5 18c1.4 0 2.6-.6 3.1-1.4-.3 2.3-1.3 3.8-3.1 4.9h7c-1.8-1.1-2.8-2.6-3.1-4.9.5.8 1.7 1.4 3.1 1.4C18 18 20 16 20 13.2 20 8.2 12 2 12 2z",
+  heart:
+    "M12 21s-7.5-4.6-9.5-9.3C1 8 3.3 4 7 4c2.2 0 3.8 1.2 5 3 1.2-1.8 2.8-3 5-3 3.7 0 6 4 4.5 7.7C19.5 16.4 12 21 12 21z",
+};
+const ranks = ["A", "K", "Q", "J", "10"];
+const hands = site.lanes.map((lane, g) => {
+  const tiles = site.tiles.map((t, i) => ({ ...t, fill: fills[i % fills.length] })).filter((t) => t.lane === lane.id);
+  return { lane, n: g + 1, suit: g === 0 ? "spade" : "heart", tiles } as const;
+});
 ---
 
 <section class="section" id="what">
   <div class="wrap">
     <h2 class="section-title reveal">{site.what.title}</h2>
     <p class="sub reveal">{site.what.sub}</p>
-    <ul class="tiles">
+    <p class="hint label reveal">{site.what.hint}</p>
+
+    <div class="hands">
       {
-        site.tiles.map((t, i) => (
-          <li class="tile box press reveal" style={`--i:${i};--fill:var(--${fills[i % fills.length]})`}>
-            <span class="mark">
-              <Icon name={t.icon} size={26} />
-            </span>
-            <span class="txt">
-              <b>{t.label}</b>
-              <small class="label">{laneName[t.lane as keyof typeof laneName]}</small>
-            </span>
-          </li>
+        hands.map(({ lane, n, suit, tiles }) => (
+          <div class={`hand ${suit}`}>
+            <h3 class="who reveal">
+              <svg class="suit" viewBox="0 0 24 24" aria-hidden="true">
+                <path d={suits[suit]} />
+              </svg>
+              <span class="label">
+                0{n} — {lane.title}
+              </span>
+            </h3>
+            <ul class="cards">
+              {tiles.map((t, i) => (
+                <li class="slot reveal" style={`--i:${i};--o:${i - (tiles.length - 1) / 2}`}>
+                  <button class="card" type="button" aria-pressed="false" data-card style={`--fill:var(--${t.fill})`}>
+                    <span class="flip">
+                      {(["front", "back"] as const).map((side) => (
+                        <span class={`face ${side}`}>
+                          {["tl", "br"].map((pos) => (
+                            <span class={`pip ${pos}`} aria-hidden="true">
+                              <span>{ranks[i]}</span>
+                              <svg viewBox="0 0 24 24">
+                                <path d={suits[suit]} />
+                              </svg>
+                            </span>
+                          ))}
+                          {side === "front" ? (
+                            <>
+                              <span class="art">
+                                <Icon name={t.icon} size={40} />
+                              </span>
+                              <b class="name">{t.label}</b>
+                            </>
+                          ) : (
+                            <>
+                              <b class="label" aria-hidden="true">
+                                {t.label}
+                              </b>
+                              <span class="detail">{t.detail}</span>
+                            </>
+                          )}
+                        </span>
+                      ))}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         ))
       }
-    </ul>
+    </div>
   </div>
 
   <!-- the only continuous motion on the page -->
@@ -43,54 +98,200 @@ const laneName = { dev: "Dev teams", biz: "Small business" } as const;
   .sub {
     font-size: var(--step-1);
     max-width: 52ch;
-    margin-bottom: clamp(28px, 4vw, 48px);
+    margin-bottom: 14px;
   }
-  .tiles {
+  .hint {
+    margin-bottom: clamp(28px, 4vw, 44px);
+    opacity: 0.7;
+  }
+
+  /* each lane: its suit and name on the side, the hand of cards beside it */
+  .hands {
+    display: grid;
+    gap: clamp(28px, 4vw, 40px);
+  }
+  .hand {
+    display: grid;
+    grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+  .who {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+  }
+  .who .suit {
+    width: 40px;
+    height: 40px;
+  }
+  .spade {
+    --suit: var(--ink);
+  }
+  .heart {
+    --suit: var(--orange);
+  }
+  .suit path,
+  .front .pip path {
+    fill: var(--suit);
+  }
+  .back .pip path {
+    fill: var(--ink);
+  }
+  .front .pip {
+    color: var(--suit);
+  }
+
+  .cards {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(12px, 2vw, 20px);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(10px, 1.6vw, 20px);
   }
-  .tile {
+
+  /* the fan: each card leans out from the middle and drops a little at the ends */
+  .card {
+    --rot: calc(var(--o) * 3deg);
+    display: block;
+    width: 100%;
+    aspect-ratio: 5 / 7;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    perspective: 1000px;
+    container-type: inline-size;
+    transform: translateY(calc(var(--o) * var(--o) * 4px)) rotate(var(--rot));
+    transition: transform var(--base) var(--ease);
+  }
+  :global([dir="rtl"]) .card {
+    --rot: calc(var(--o) * -3deg);
+  }
+  .card[aria-pressed="true"] {
+    transform: translateY(-12px);
+  }
+  @media (hover: hover) {
+    .card:hover {
+      transform: translateY(-12px);
+    }
+    .card:hover .front {
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+    .card:hover :global(.ico) {
+      animation: nudge 400ms var(--ease);
+    }
+  }
+  .card:focus-visible {
+    outline: none;
+  }
+  .card:focus-visible .face {
+    outline: var(--bw) solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  /* turning over: the two faces sit back to back */
+  .flip {
+    position: relative;
+    display: block;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 520ms var(--ease);
+  }
+  .card[aria-pressed="true"] .flip {
+    transform: rotateY(180deg);
+  }
+  .face {
+    position: absolute;
+    inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    background: var(--fill);
-    border-radius: var(--pill);
+    justify-content: center;
+    gap: 12px;
+    padding: 34px 14px;
+    background: var(--paper-2);
+    border: var(--bw) solid var(--ink);
+    border-radius: 14px;
+    text-align: center;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
-  .mark {
-    flex: none;
-    width: 52px;
-    height: 52px;
+  .back {
+    transform: rotateY(180deg);
+    align-items: start;
+    gap: 8px;
+    padding-inline: 16px;
+    background: var(--fill);
+    text-align: start;
+  }
+  /* face up, the picked card lifts off the table like a hovered one */
+  .card[aria-pressed="true"] .back {
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  /* corner indices, the bottom one upside down like a real card */
+  .pip {
+    position: absolute;
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(0.85rem, 10cqi, 1.2rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .pip svg {
+    width: 0.8em;
+    height: 0.8em;
+  }
+  .tl {
+    top: 9px;
+    inset-inline-start: 9px;
+  }
+  .br {
+    bottom: 9px;
+    inset-inline-end: 9px;
+    rotate: 180deg;
+  }
+
+  .art {
+    width: 56%;
+    aspect-ratio: 1;
     display: grid;
     place-items: center;
-    background: var(--paper-2);
+    background: var(--fill);
     border: var(--bw) solid var(--ink);
     border-radius: var(--pill);
   }
-  .mark :global(.ico) {
+  .art :global(.ico) {
+    width: 50%;
+    height: 50%;
     stroke-width: 3.5;
-    transform-origin: 40% 60%;
   }
-  .txt {
-    display: grid;
-    gap: 2px;
-    line-height: 1.1;
-  }
-  .txt b {
+  .name {
     font-family: var(--display);
     font-weight: 900;
     font-stretch: 112%;
-    font-size: 1rem;
+    font-size: clamp(0.7rem, 7.6cqi, 1rem);
+    line-height: 1.1;
     text-transform: uppercase;
     letter-spacing: -0.01em;
   }
-  .txt small {
-    opacity: 0.75;
-    font-size: 0.68rem;
+  :global([dir="rtl"]) .name {
+    letter-spacing: 0;
+  }
+  .back .label {
+    font-size: clamp(0.6rem, 5.6cqi, var(--label));
+    line-height: 1.2;
+  }
+  .detail {
+    font-size: clamp(0.72rem, 7cqi, 0.95rem);
+    line-height: 1.35;
   }
 
   .marquee {
@@ -115,27 +316,77 @@ const laneName = { dev: "Dev teams", biz: "Small business" } as const;
   }
   .track span::after {
     content: "✦";
-    margin-left: 48px;
+    margin-inline-start: 48px;
     color: var(--yellow);
+  }
+  /* the words run along the reading direction: leftwards in English, rightwards in Hebrew */
+  :global([dir="rtl"]) .track {
+    animation-name: slide-rtl;
   }
   @keyframes slide {
     to {
       transform: translateX(-50%);
     }
   }
-  @media (max-width: 860px) {
-    .tiles {
-      grid-template-columns: 1fr 1fr;
+  @keyframes slide-rtl {
+    to {
+      transform: translateX(50%);
     }
   }
-  @media (max-width: 520px) {
-    .tiles {
-      grid-template-columns: 1fr;
+
+  @media (max-width: 1100px) {
+    .hand {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+    }
+    .who {
+      display: flex;
+      align-items: center;
+    }
+    .who .suit {
+      width: 26px;
+      height: 26px;
+    }
+  }
+  /* phones and small tablets: the hand spreads into a row you swipe through */
+  @media (max-width: 760px) {
+    .cards {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: clamp(150px, 44%, 200px);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 26px var(--gutter) 30px;
+      scroll-padding-inline: var(--gutter);
+    }
+    .slot {
+      scroll-snap-align: start;
     }
   }
   @media (prefers-reduced-motion: reduce) {
     .track {
       animation: none;
     }
+    .card,
+    .flip {
+      transition: none;
+    }
   }
 </style>
+
+<script>
+  // one card face up at a time: picking another turns the first back, picking the same one
+  // again (or Escape) turns it back too
+  const cards = [...document.querySelectorAll<HTMLButtonElement>("[data-card]")];
+  const show = (card?: HTMLButtonElement) => {
+    for (const c of cards) c.setAttribute("aria-pressed", String(c === card));
+  };
+  for (const c of cards) {
+    c.addEventListener("click", () => show(c.getAttribute("aria-pressed") === "true" ? undefined : c));
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") show();
+  });
+</script>

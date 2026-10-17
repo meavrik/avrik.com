@@ -1,0 +1,573 @@
+---
+// The lane illustrations: each lane's process as a little conveyor line. Work rides the
+// belt from the station on the left, passes the agent in the middle and comes out done
+// at the right. Three jobs ride a 6s loop, 2s apart, so one passes the agent every 2s;
+// the agent's own loops (the review note, the grabbing arms) run on that 2s beat.
+// In Hebrew the scene mirrors so the belt runs right to left; groups marked .up turn back
+// so code, ticks and numbers still read the right way round.
+// With reduced motion nothing moves: the jobs sit where their transform attribute puts them.
+interface Props {
+  lane: string;
+}
+const { lane } = Astro.props;
+
+const rollers = (from: number, to: number, n = 9) =>
+  Array.from({ length: n }, (_, i) => from + ((to - from) * i) / (n - 1));
+
+// a folder, drawn from the bottom centre so it sits on the belt
+const folder = "M-28 -30a4 4 0 0 1 4-4h14l5 5h29a4 4 0 0 1 4 4v21a4 4 0 0 1-4 4h-48a4 4 0 0 1-4-4z";
+const neat = ["f-yellow", "f-blue", "f-paper"];
+---
+
+{
+  lane === "dev" ? (
+    <svg
+      class="scene"
+      viewBox="0 0 620 236"
+      style="--w:680px;--x0:114px;--x1:449px;--x2:528px;--y2:136px;--belt:0.39s"
+      aria-hidden="true"
+    >
+      {/* 1 · your code */}
+      <g class="st" style="--n:0">
+        <g class="up">
+          <rect x="34" y="18" width="160" height="116" rx="12" class="f-paper" />
+          <path d="M34 44h160" />
+          <circle cx="51" cy="31" r="4.5" class="f-pink thin" />
+          <circle cx="66" cy="31" r="4.5" class="f-yellow thin" />
+          <circle cx="81" cy="31" r="4.5" class="f-teal thin" />
+          <path d="M54 66h34" class="code c-blue" />
+          <path d="M98 66h24" class="code c-pink" />
+          <path d="M70 84h56" class="code c-teal" />
+          <path d="M70 102h28" class="code c-orange" />
+          <path d="M108 102h38" class="code c-blue" />
+          <path d="M54 120h40" class="code faint" />
+          <path d="M106 113v14" class="caret" />
+        </g>
+      </g>
+
+      {/* 2 · the reviewer, on a gantry over the belt */}
+      <g class="st" style="--n:1">
+        <rect x="294" y="80" width="12" height="16" class="f-paper" />
+        <rect x="236" y="110" width="14" height="92" class="f-teal" />
+        <rect x="350" y="110" width="14" height="92" class="f-teal" />
+        <rect x="226" y="92" width="148" height="22" rx="8" class="f-teal" />
+        <path d="M300 28V17" />
+        <circle cx="300" cy="11" r="6" class="f-teal" />
+        <rect x="264" y="28" width="72" height="56" rx="16" class="f-yellow" />
+        <g class="eyes">
+          <circle cx="287" cy="53" r="6" class="dot" />
+          <circle cx="313" cy="53" r="6" class="dot" />
+        </g>
+        <path d="M291 68q9 7 18 0" />
+        <g class="note">
+          <path
+            d="M354 4h32a10 10 0 0 1 10 10v18a10 10 0 0 1-10 10h-18l-18 12 4-12a10 10 0 0 1-10-10V14a10 10 0 0 1 10-10z"
+            class="f-paper"
+          />
+          <path d="M359 23l7 7 14-14" class="ok up" />
+        </g>
+      </g>
+
+      {/* 3 · shipped */}
+      <g class="st" style="--n:2">
+        <g class="smoke">
+          <circle cx="542" cy="208" r="10" class="f-paper thin" style="--k:0" />
+          <circle cx="562" cy="214" r="9" class="f-paper thin" style="--k:1" />
+          <circle cx="584" cy="208" r="12" class="f-paper thin" style="--k:2" />
+          <circle cx="604" cy="200" r="7" class="f-paper thin" style="--k:3" />
+        </g>
+        <g class="rocket">
+          <g class="flame">
+            <path d="M557 144c0 16 6 28 9 42 3-14 9-26 9-42z" class="f-yellow" />
+            <path d="M561 144c0 10 3 18 5 26 2-8 5-16 5-26z" class="f-orange thin" />
+          </g>
+          <path d="M544 104c-12 8-18 20-18 42l18-12zM588 104c12 8 18 20 18 42l-18-12z" class="f-orange" />
+          <path d="M554 132h24l-4 12h-16z" class="f-paper" />
+          <path d="M566 30c20 16 24 50 22 102h-44c-2-52 2-86 22-102z" class="f-paper" />
+          <path d="M566 30c11 9 17 20 19 32h-38c2-12 8-23 19-32z" class="f-blue bare" />
+          <path d="M547 62h38" />
+          <path d="M566 30c20 16 24 50 22 102h-44c-2-52 2-86 22-102z" />
+          <circle cx="566" cy="88" r="11" class="f-sky" />
+          <path d="M560 85a7 7 0 0 1 5-5" class="thin" />
+        </g>
+        <path d="M516 52v16M614 40v22M616 92v12" class="thin" />
+      </g>
+
+      <g class="belt">
+        <rect x="34" y="196" width="492" height="30" rx="15" class="f-paper" />
+        <path d="M50 203h460" class="run thin" />
+        {rollers(54, 506).map((x) => (
+          <circle cx={x} cy="215" r="5" class="thin" />
+        ))}
+      </g>
+
+      {/* the jobs: a change with a bug in it goes in, a reviewed one with a tick comes out */}
+      {[190, 300, 420].map((x, j) => (
+        <g class:list={["job", { done: j === 2 }]} style={`--j:${j}`} transform={`translate(${x} 196)`}>
+          <g class="up">
+            <rect x="-27" y="-38" width="54" height="38" rx="7" class="f-paper" />
+            <path d="M-17 -28h24M-17 -10h16" class="thin faint" />
+            <path d="M-17 -19q4-5 8 0t8 0 8 0 8 0" class="thin bug before" />
+            <path d="M-17 -19h32" class="thin ok after" />
+            <g class="after">
+              <circle cx="25" cy="-37" r="11" class="f-teal thin" />
+              <path d="M20 -37l4 4 7-8" class="thin light" />
+            </g>
+          </g>
+        </g>
+      ))}
+
+      {/* the scan, laid over whatever is passing under it */}
+      <path d="M262 114L252 196h96l-10-82z" class="beam" />
+    </svg>
+  ) : (
+    <svg
+      class="scene"
+      viewBox="0 0 420 236"
+      style="--w:460px;--x0:78px;--x1:316px;--x2:342px;--y2:160px;--belt:0.55s"
+      aria-hidden="true"
+    >
+      {/* 1 · the pile */}
+      <g class="st" style="--n:0">
+        <g class="up">
+          <g class="incoming">
+            <rect x="12" y="8" width="30" height="38" rx="4" class="f-paper thin" transform="rotate(-16 27 27)" />
+          </g>
+          <g transform="rotate(-14 62 80)">
+            <rect x="38" y="46" width="48" height="64" rx="5" class="f-paper" />
+            <path d="M48 60h26M48 70h20M48 80h28" class="thin faint" />
+          </g>
+          <g transform="rotate(12 96 76)">
+            <rect x="74" y="44" width="46" height="62" rx="5" class="f-blue" />
+            <path d="M84 58h24M84 68h16" class="thin" />
+          </g>
+          <g transform="rotate(-6 81 86)">
+            <rect x="50" y="66" width="62" height="40" rx="5" class="f-pink" />
+            <path d="M52 69l29 20 29-20" class="thin" />
+          </g>
+          <path d="M24 104h108l-9 36H33z" class="f-paper" />
+          <path d="M50 120h56" class="thin faint" />
+          <g class="count">
+            <rect x="106" y="22" width="48" height="26" rx="13" class="f-ink" />
+            <text x="130" y="40.5" text-anchor="middle">99+</text>
+          </g>
+        </g>
+      </g>
+
+      {/* 2 · the agent, behind the belt */}
+      <g class="st" style="--n:1">
+        <rect x="203" y="80" width="14" height="18" class="f-paper" />
+        <rect x="174" y="94" width="72" height="116" rx="16" class="f-teal" />
+        <circle cx="210" cy="124" r="8" class="f-yellow" />
+        <path d="M210 30V19" />
+        <circle cx="210" cy="13" r="6" class="f-teal" />
+        <rect x="176" y="30" width="68" height="54" rx="16" class="f-yellow" />
+        <g class="eyes">
+          <circle cx="197" cy="54" r="6" class="dot" />
+          <circle cx="223" cy="54" r="6" class="dot" />
+        </g>
+        <path d="M201 68q9 7 18 0" />
+      </g>
+
+      {/* 3 · filed */}
+      <g class="st" style="--n:2">
+        <g class="up">
+          <path d="M300 54a6 6 0 0 1 6-6h20l7 7h41a6 6 0 0 1 6 6v50h-80z" class="f-yellow" />
+          <path
+            d="M300 54a6 6 0 0 1 6-6h20l7 7h41a6 6 0 0 1 6 6v50h-80z"
+            class="f-blue"
+            transform="translate(0 10)"
+          />
+          <path
+            d="M300 54a6 6 0 0 1 6-6h20l7 7h41a6 6 0 0 1 6 6v50h-80z"
+            class="f-paper"
+            transform="translate(0 20)"
+          />
+          <path d="M288 104h108l-9 36h-90z" class="f-paper" />
+          <path d="M314 120h56" class="thin faint" />
+          <g class="check">
+            <circle cx="388" cy="48" r="17" class="f-teal" />
+            <path d="M380 48l6 6 11-12" class="light" />
+          </g>
+        </g>
+      </g>
+
+      <g class="belt">
+        <rect x="24" y="196" width="372" height="30" rx="15" class="f-paper" />
+        <path d="M40 203h340" class="run thin" />
+        {rollers(44, 376).map((x) => (
+          <circle cx={x} cy="215" r="5" class="thin" />
+        ))}
+      </g>
+
+      {/* the jobs: loose paper goes in, a filed folder comes out */}
+      {[130, 210, 290].map((x, j) => (
+        <g class:list={["job", { done: j === 2 }]} style={`--j:${j}`} transform={`translate(${x} 196)`}>
+          <g class="up">
+            <g class="before">
+              {j === 0 && (
+                <g transform="rotate(-8 -26 0)">
+                  <rect x="-26" y="-34" width="52" height="34" rx="4" class="f-pink" />
+                  <path d="M-24 -32l24 17 24-17" class="thin" />
+                </g>
+              )}
+              {j === 1 && (
+                <>
+                  <path d="M-24 0l-3-18 11-14 14 5 10-9 14 10 4 16-6 10z" class="f-paper" />
+                  <path d="M-16 -32l10 18 14-22M-6 -14l-21-4M-6 -14l26 14" class="thin faint" />
+                </>
+              )}
+              {j === 2 && (
+                <g transform="rotate(-10 -17 0)">
+                  <rect x="-17" y="-42" width="34" height="42" rx="4" class="f-blue" />
+                  <path d="M-9 -32h18M-9 -24h12" class="thin" />
+                </g>
+              )}
+            </g>
+            <path d={folder} class={`after ${neat[j]}`} />
+          </g>
+        </g>
+      ))}
+
+      {/* the agent's arms reach over the belt, in front of the job in its hands */}
+      <g class="st" style="--n:1">
+        <g class="arm" style="--s:-1;transform-origin:178px 112px">
+          <path d="M178 112c-26 8-28 44 6 62" class="limb" />
+          <path d="M178 112c-26 8-28 44 6 62" class="limb-in" />
+          <circle cx="186" cy="176" r="9" class="f-paper" />
+        </g>
+        <g class="arm" style="--s:1;transform-origin:242px 112px">
+          <path d="M242 112c26 8 28 44-6 62" class="limb" />
+          <path d="M242 112c26 8 28 44-6 62" class="limb-in" />
+          <circle cx="234" cy="176" r="9" class="f-paper" />
+        </g>
+      </g>
+    </svg>
+  )
+}
+
+<style>
+  /* flat and outlined like the rest of the page; tilts with the cursor (motion.ts).
+     --w caps the width once the cards stack, so neither scene blows up on a tablet */
+  .scene {
+    display: block;
+    width: 100%;
+    max-width: var(--w);
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 120ms linear;
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .thin {
+    stroke-width: 3;
+  }
+  .faint {
+    opacity: 0.35;
+  }
+  .bare {
+    stroke: none;
+  }
+  .f-paper {
+    fill: var(--paper-2);
+  }
+  .f-yellow {
+    fill: var(--yellow);
+  }
+  .f-teal {
+    fill: var(--teal);
+  }
+  .f-blue {
+    fill: var(--blue);
+  }
+  .f-pink {
+    fill: var(--pink);
+  }
+  .f-orange {
+    fill: var(--orange);
+  }
+  .f-sky {
+    fill: var(--sky);
+  }
+  .f-ink,
+  .dot {
+    fill: var(--ink);
+  }
+  .dot {
+    stroke: none;
+  }
+  .code {
+    stroke-width: 6;
+  }
+  .c-blue {
+    stroke: var(--blue);
+  }
+  .c-pink {
+    stroke: var(--pink);
+  }
+  .c-teal {
+    stroke: var(--teal);
+  }
+  .c-orange {
+    stroke: var(--orange);
+  }
+  .bug {
+    stroke: var(--orange);
+  }
+  .ok {
+    stroke: var(--teal);
+  }
+  .light {
+    stroke: var(--paper-2);
+  }
+  .run {
+    stroke-dasharray: 10 14;
+    opacity: 0.4;
+  }
+  .beam {
+    fill: var(--yellow);
+    stroke: none;
+    opacity: 0.55;
+    mix-blend-mode: multiply;
+  }
+  .count text {
+    direction: ltr;
+    fill: var(--paper-2);
+    stroke: none;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 15px;
+  }
+  .limb {
+    stroke-width: 14;
+  }
+  .limb-in {
+    stroke: var(--teal);
+    stroke-width: 7;
+  }
+
+  /* jobs: before the agent they show .before, after it .after */
+  .after {
+    opacity: 0;
+  }
+  .done .after {
+    opacity: 1;
+  }
+  .done .before {
+    opacity: 0;
+  }
+
+  .st,
+  .eyes,
+  .note,
+  .flame,
+  .smoke circle,
+  .incoming,
+  .check,
+  .after {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .st {
+    transform-origin: 50% 100%;
+  }
+  .note {
+    transform-origin: 0 100%;
+  }
+  .flame {
+    transform-origin: 50% 0;
+  }
+
+  /* Hebrew: the line runs right to left */
+  :global([dir="rtl"]) .scene {
+    scale: -1 1;
+  }
+  :global([dir="rtl"]) .up {
+    scale: -1 1;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.in) .st {
+      animation: art-pop 520ms var(--ease) both;
+      animation-delay: calc(200ms + var(--n) * 140ms);
+    }
+    .job {
+      animation: art-ride 6s linear infinite;
+    }
+    .job .before {
+      animation: art-before 6s linear infinite;
+    }
+    .job .after {
+      animation: art-after 6s linear infinite;
+    }
+    .job,
+    .job .before,
+    .job .after {
+      animation-delay: calc(var(--j) * -2s);
+    }
+    .run {
+      animation: art-belt var(--belt) linear infinite;
+    }
+    .eyes {
+      animation: art-blink 4s infinite;
+    }
+    .note {
+      animation: art-note 2s var(--ease-out) infinite;
+    }
+    .caret {
+      animation: art-caret 1.1s step-end infinite;
+    }
+    .rocket {
+      animation: art-hover 1.6s ease-in-out infinite;
+    }
+    .flame {
+      animation: art-flame 160ms ease-in-out infinite alternate;
+    }
+    .smoke circle {
+      animation: art-puff 1.2s ease-in-out infinite;
+      animation-delay: calc(var(--k) * -0.3s);
+    }
+    .incoming {
+      animation: art-drop 2s ease-in infinite;
+    }
+    .check {
+      animation: art-pulse 2s var(--ease-out) infinite;
+    }
+    .arm {
+      transform-box: view-box;
+      animation: art-grab 2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes art-pop {
+    from {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+  }
+  @keyframes art-ride {
+    0% {
+      transform: translate(var(--x0), 196px);
+      opacity: 0;
+    }
+    6%,
+    92% {
+      opacity: 1;
+    }
+    90% {
+      transform: translate(var(--x1), 196px);
+      animation-timing-function: ease-in;
+    }
+    100% {
+      transform: translate(var(--x2), var(--y2));
+      opacity: 0;
+    }
+  }
+  @keyframes art-before {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    53%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes art-after {
+    0%,
+    50% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    56%,
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes art-belt {
+    to {
+      stroke-dashoffset: -24;
+    }
+  }
+  @keyframes art-blink {
+    0%,
+    92%,
+    100% {
+      transform: none;
+    }
+    96% {
+      transform: scaleY(0.15);
+    }
+  }
+  @keyframes art-note {
+    0%,
+    38%,
+    62%,
+    100% {
+      transform: none;
+    }
+    46% {
+      transform: scale(0);
+    }
+  }
+  @keyframes art-caret {
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes art-hover {
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes art-flame {
+    to {
+      transform: scaleY(0.72);
+    }
+  }
+  @keyframes art-puff {
+    50% {
+      transform: scale(1.18);
+    }
+  }
+  @keyframes art-drop {
+    0% {
+      transform: translate(-18px, -16px) rotate(-20deg);
+      opacity: 0;
+    }
+    20%,
+    75% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(24px, 42px) rotate(10deg);
+      opacity: 0;
+    }
+  }
+  @keyframes art-pulse {
+    0% {
+      transform: scale(1.3);
+    }
+    35%,
+    100% {
+      transform: none;
+    }
+  }
+  @keyframes art-grab {
+    0%,
+    100% {
+      transform: none;
+    }
+    50% {
+      transform: rotate(calc(var(--s) * 7deg));
+    }
+  }
+</style>

@@ -1,11 +1,12 @@
 ---
-import { site } from "../data/site";
+import { getSite } from "../i18n";
 import Icon from "./Icon.astro";
+const site = getSite(Astro.currentLocale);
 const badge = ["orange", "pink", "teal"];
 ---
 
 <section class="section wrap" id="how">
-  <h2 class="section-title reveal">Three steps. Stop after any.</h2>
+  <h2 class="section-title reveal">{site.stepsTitle}</h2>
   <ol class="steps">
     {
       site.steps.map((s, i) => (
@@ -18,7 +19,7 @@ const badge = ["orange", "pink", "teal"];
           </div>
           {i < site.steps.length - 1 && (
             <span class="joint" aria-hidden="true">
-              <Icon name="arrow" size={36} />
+              <Icon name="arrow" size={36} class="mirror" />
             </span>
           )}
         </li>
@@ -53,7 +54,7 @@ const badge = ["orange", "pink", "teal"];
   .n {
     position: absolute;
     top: -18px;
-    right: 20px;
+    inset-inline-end: 20px;
     width: 42px;
     height: 42px;
     display: grid;
@@ -70,10 +71,11 @@ const badge = ["orange", "pink", "teal"];
     font-size: var(--step-0);
     max-width: 26ch;
   }
+  /* the arrow between cards points at the next step: along the reading direction, then down on phones */
   .joint {
     position: absolute;
     top: 50%;
-    right: calc(-1 * clamp(16px, 3vw, 40px) / 2 - 18px);
+    inset-inline-end: calc(-1 * clamp(16px, 3vw, 40px) / 2 - 18px);
     transform: translateY(-50%);
     z-index: 1;
     background: var(--bg, var(--paper));
@@ -88,9 +90,12 @@ const badge = ["orange", "pink", "teal"];
     .joint {
       top: auto;
       bottom: -40px;
-      right: auto;
+      inset-inline-end: auto;
       left: 50%;
       transform: translateX(-50%) rotate(90deg);
+    }
+    :global([dir="rtl"]) .joint :global(.mirror) {
+      transform: none;
     }
   }
 </style>

@@ -1,16 +1,21 @@
 ---
-import { site } from "../data/site";
+import { getSite, sites, locales, localeHref } from "../i18n";
 import Icon from "./Icon.astro";
+const site = getSite(Astro.currentLocale);
 const here = Astro.url.pathname;
+const home = `${localeHref(site.lang.code, "/")}#top`;
+// the other language: the orange sticker at the end of the bar is stamped with its short name
+const others = locales.filter((l) => l !== site.lang.code);
 ---
 
 <header class="nav">
   <div class="wrap row">
-    <a href="/#top" class="logo label">
+    <!-- the logo reads left to right in every language -->
+    <a href={home} class="logo label" dir="ltr">
       <Icon name="globe" size={22} class="in" />
       avrik<span>.com</span>
     </a>
-    <nav aria-label="Sections" class="links">
+    <nav aria-label={site.navLabel} class="links">
       {
         site.nav.map((n) => (
           <a class="label" href={n.href} aria-current={n.href === here ? "page" : undefined}>
@@ -20,8 +25,25 @@ const here = Astro.url.pathname;
       }
     </nav>
     <div class="right">
-      <a class="btn btn-sm press" href="#talk">Contact <span aria-hidden="true">↗</span></a>
-      <span class="disc" aria-hidden="true"><Icon name="spark" size={18} class="in" /></span>
+      <a class="btn btn-sm press" href={site.contact.href}>
+        {site.contact.label} <span class="mirror" aria-hidden="true">↗</span>
+      </a>
+      <!-- language switch: the same page in the other language -->
+      {
+        others.map((l) => (
+          <a
+            class="disc display press"
+            href={localeHref(l, here)}
+            lang={l}
+            hreflang={l}
+            dir={sites[l].lang.dir}
+            title={sites[l].lang.name}
+            aria-label={sites[l].lang.name}
+          >
+            {sites[l].lang.short}
+          </a>
+        ))
+      }
     </div>
   </div>
 </header>
@@ -72,17 +94,21 @@ const here = Astro.url.pathname;
   .btn-sm {
     padding: 8px 16px;
   }
+  /* the orange sticker at the end of the bar: the language switch, lifts like a button */
   .disc {
     width: 36px;
     height: 36px;
     display: grid;
     place-items: center;
+    font-size: 0.72rem;
+    text-decoration: none;
     background: var(--orange);
     border: var(--bw) solid var(--ink);
     border-radius: var(--pill);
   }
   @media (max-width: 640px) {
-    .links {
+    .links,
+    .logo span {
       display: none;
     }
   }

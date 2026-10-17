@@ -1,6 +1,7 @@
 ---
-import { site } from "../data/site";
+import { getSite } from "../i18n";
 import Icon from "./Icon.astro";
+const site = getSite(Astro.currentLocale);
 ---
 
 <section class="section wrap" id="talk">
@@ -11,11 +12,11 @@ import Icon from "./Icon.astro";
     <div class="actions">
       <a class="btn btn-primary btn-xl press" href={site.calendar}>
         <Icon name="calendar" size={24} />
-        Book a call
+        {site.talk.cta}
       </a>
       <a class="mail" href={`mailto:${site.email}`}>
         <Icon name="mail" size={22} />
-        {site.email}
+        <span dir="ltr">{site.email}</span>
       </a>
     </div>
   </div>
@@ -36,7 +37,7 @@ import Icon from "./Icon.astro";
   .spark {
     position: absolute;
     top: 12px;
-    right: 24px;
+    inset-inline-end: 24px;
     font-size: clamp(3rem, 8vw, 7rem);
     line-height: 1;
     color: var(--yellow);

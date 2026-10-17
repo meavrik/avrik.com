@@ -1,0 +1,223 @@
+---
+// /lab/ and /he/lab/: the side projects, one card each
+import { getSite } from "../i18n";
+const site = getSite(Astro.currentLocale);
+const { lab } = site;
+const fills = ["sky", "green", "pink", "orange"];
+---
+
+<section class="section wrap" id="lab">
+  <h1 class="section-title reveal">{lab.title}</h1>
+  <p class="sub reveal">{lab.sub}</p>
+  <ul class="projects">
+    {
+      lab.projects.map((p, i) => (
+        <li class="project box reveal" style={`--i:${i + 1};--fill:var(--${fills[i % fills.length]})`}>
+          <span class="sticker display" style={`--tilt:${i % 2 ? 5 : -5}deg`} aria-hidden="true">
+            {p.sticker}
+          </span>
+          {p.image && (
+            <img
+              class="shot"
+              src={p.image}
+              alt={`${lab.screenshot} ${p.name}`}
+              width="960"
+              height="720"
+              loading={i < 2 ? "eager" : "lazy"}
+            />
+          )}
+          {p.video && (
+            <div class="embed" data-w={p.video.width} style={`--w:${p.video.width};--h:${p.video.height}`}>
+              <iframe
+                src={p.video.src}
+                title={p.video.title}
+                width={p.video.width}
+                height={p.video.height}
+                loading="lazy"
+                scrolling="no"
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                allowfullscreen
+              />
+            </div>
+          )}
+          <div class="body">
+            <span class="label">
+              {String(i + 1).padStart(2, "0")} — <span dir="ltr">{p.where ?? new URL(p.url).host}</span>
+            </span>
+            <h2>
+              {p.name}
+              {p.aka && (
+                <span class="aka" lang={p.aka.lang} dir={p.aka.lang === "he" ? "rtl" : "ltr"}>
+                  {p.aka.text}
+                </span>
+              )}
+            </h2>
+            <p class="line">{p.line}</p>
+            <p class="how">{p.how}</p>
+            {p.behind && (
+              <ul class="behind">
+                {p.behind.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            )}
+            <a class="btn btn-primary press" href={p.url} target="_blank" rel="noopener">
+              {p.cta} <span class="mirror" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .section-title {
+    margin-bottom: 20px;
+  }
+  .sub {
+    font-size: var(--step-1);
+    max-width: 52ch;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .projects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 3vw, 36px);
+  }
+  .project {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    padding: clamp(14px, 1.6vw, 18px);
+    background: var(--fill);
+    border-radius: var(--r-lg);
+  }
+  .shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: top;
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--r);
+    background: var(--paper-2);
+  }
+  /* an embedded player: fixed at the size in its URL, scaled to the card's width (the script below) */
+  .embed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--w) / var(--h);
+    overflow: hidden;
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--r);
+    background: var(--paper-2);
+  }
+  .embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(var(--w) * 1px);
+    height: calc(var(--h) * 1px);
+    border: 0;
+    transform: scale(var(--s, 1));
+    transform-origin: top left;
+  }
+  .body {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    justify-items: start;
+    padding: 0 clamp(6px, 1vw, 12px) clamp(6px, 1vw, 12px);
+  }
+  h2 {
+    font-size: var(--step-3);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 14px;
+  }
+  /* the name in its other language: the display face only covers one script, so it gets the body face */
+  .aka {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 0.7em;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.7;
+  }
+  .line {
+    font-size: var(--step-0);
+    max-width: 46ch;
+  }
+  .how {
+    font-size: var(--step--1);
+    font-weight: 500;
+    padding-top: 12px;
+    border-top: 2px solid var(--ink);
+    justify-self: stretch;
+  }
+  .behind {
+    list-style: none;
+    margin: 0 0 6px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    font-size: var(--step--1);
+    font-weight: 500;
+    justify-self: stretch;
+  }
+  .behind li {
+    position: relative;
+    padding-inline-start: 22px;
+  }
+  /* an ink diamond for a bullet */
+  .behind li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 2px;
+    top: 0.5em;
+    width: 8px;
+    height: 8px;
+    background: var(--ink);
+    transform: rotate(45deg);
+  }
+  /* a sticker slapped across the card's top corner, like the lanes' "Ship it!" */
+  .sticker {
+    position: absolute;
+    z-index: 1;
+    top: -16px;
+    inset-inline-end: 22px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    background: var(--yellow);
+    border: var(--bw) solid var(--ink);
+    border-radius: var(--pill);
+    transform: rotate(var(--tilt));
+  }
+  @media (max-width: 820px) {
+    .projects {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+    }
+  }
+</style>
+
+<script>
+  // embedded players come at one fixed size; scale each to the width its card gives it
+  const embeds = document.querySelectorAll<HTMLElement>(".embed");
+  if (embeds.length && "ResizeObserver" in window) {
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) {
+        const el = e.target as HTMLElement;
+        el.style.setProperty("--s", (el.clientWidth / Number(el.dataset.w)).toFixed(4));
+      }
+    });
+    embeds.forEach((e) => ro.observe(e));
+  }
+</script>

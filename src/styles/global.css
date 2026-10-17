@@ -100,6 +100,27 @@ h3,
   color: var(--ink);
 }
 
+/* ── right to left (Hebrew) ──
+   layout flips on its own: components position with inline-start/end, not left/right.
+   type: Hebrew has no capitals to track tight, and lamed and the final letters reach
+   further up and down than Latin capitals, so headings get normal tracking and a little more leading. */
+[dir="rtl"] :where(h1, h2, h3, .display) {
+  letter-spacing: 0;
+  word-spacing: normal;
+  line-height: 1.08;
+}
+[dir="rtl"] :where(.label, .btn, .tag) {
+  letter-spacing: 0.02em;
+}
+/* glyphs that point along the reading direction (arrows) turn round */
+[dir="rtl"] .mirror {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+[dir="rtl"] svg.mirror {
+  display: block;
+}
+
 /* ── layout ── */
 .wrap {
   width: min(100% - 2 * var(--gutter), var(--max));

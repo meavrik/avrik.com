@@ -3,7 +3,8 @@
 // is sized in em on a 20 × 22.4em canvas, so --me-size (the font-size) scales the whole drawing.
 // The bird from the clouds nests in the hair. Hover: it pops up and peeps, one eyebrow goes up.
 // The eyes follow the pointer (the script at the bottom).
-import { site } from "../data/site";
+import { getSite } from "../i18n";
+const site = getSite(Astro.currentLocale);
 const { portrait } = site.bio;
 
 // the curly top: circles along the crown, [x, y, r] in canvas em. One outline goes round them all.

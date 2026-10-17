@@ -59,3 +59,12 @@
     --r-lg: 18px;
   }
 }
+
+/* Hebrew pages: the two Latin faces have no Hebrew, so they swap for a pair with the same
+   flavour (Secular One: one heavy geometric display weight; Rubik: the body). Base.astro
+   loads them. The hero size is tuned to the widest Hebrew headline line. */
+:root[lang="he"] {
+  --display: "Secular One", "Rubik", "Arial Hebrew", sans-serif;
+  --body: "Rubik", "Arial Hebrew", Arial, sans-serif;
+  --step-hero: clamp(2.4rem, 5.3vw, 4.7rem);
+}

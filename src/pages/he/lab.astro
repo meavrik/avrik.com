@@ -1,0 +1,19 @@
+---
+// the Hebrew /he/lab/: the same page; every component picks its copy from Astro.currentLocale
+import Base from "../../layouts/Base.astro";
+import Nav from "../../components/Nav.astro";
+import Lab from "../../components/Lab.astro";
+import Contact from "../../components/Contact.astro";
+import Footer from "../../components/Footer.astro";
+import { getSite } from "../../i18n";
+const { lab } = getSite(Astro.currentLocale);
+---
+
+<Base title={lab.metaTitle} description={`${lab.metaDescription} ${lab.projects.map((p) => p.name).join(", ")}.`}>
+  <Nav />
+  <main>
+    <Lab />
+    <Contact />
+  </main>
+  <Footer />
+</Base>

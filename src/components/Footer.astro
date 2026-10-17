@@ -1,14 +1,23 @@
 ---
-import { site } from "../data/site";
+import { getSite, sites, locales, localeHref } from "../i18n";
+const site = getSite(Astro.currentLocale);
+const here = Astro.url.pathname;
+const others = locales.filter((l) => l !== site.lang.code);
 ---
 
 <footer>
   <div class="wrap row label">
-    <span>{site.footer}</span>
+    <span>{site.footer.text}</span>
     <span class="links">
-      <a href="/lab/">Lab</a>
-      <a href={site.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a>
-      <a href={site.github} target="_blank" rel="noopener">GitHub ↗</a>
+      <a href={site.linkedin} target="_blank" rel="noopener">LinkedIn <span class="mirror" aria-hidden="true">↗</span></a>
+      <a href={site.github} target="_blank" rel="noopener">GitHub <span class="mirror" aria-hidden="true">↗</span></a>
+      {
+        others.map((l) => (
+          <a href={localeHref(l, here)} lang={l} hreflang={l} dir={sites[l].lang.dir}>
+            {sites[l].lang.name}
+          </a>
+        ))
+      }
     </span>
   </div>
 </footer>
@@ -27,6 +36,7 @@ import { site } from "../data/site";
   }
   .links {
     display: flex;
+    flex-wrap: wrap;
     gap: 22px;
   }
   a {

@@ -1,7 +1,28 @@
-// All copy and links live here. Edit this file, not the components.
+// All English copy and links live here. Edit this file, not the components.
+// The Hebrew version is he.ts, same shape; src/i18n.ts picks one per page.
+
+// a lab card: a screenshot (image, 4:3, in public/lab/) or an embedded player (video: src, title
+// and the size baked into its URL; the card scales it). where: shown in place of the site's host.
+// aka: the name in its other language, if it has one. behind: optional behind-the-scenes bullets
+export type Project = {
+  name: string;
+  aka: { text: string; lang: string } | null;
+  url: string;
+  image?: string;
+  video?: { src: string; title: string; width: number; height: number };
+  where?: string;
+  sticker: string;
+  cta: string;
+  line: string;
+  how: string;
+  behind?: string[];
+};
 
 export const site = {
+  lang: { code: "en", dir: "ltr", name: "English", short: "EN", label: "Language" },
   name: "Avrik",
+  fullName: "Avrik Berman",
+  role: "AI process integrator",
   domain: "avrik.com",
   title: "Avrik — AI process integrator",
   description:
@@ -16,12 +37,13 @@ export const site = {
 
   // home-page sections are linked as /#id so the nav also works from /lab/
   nav: [
-    { label: "Who", href: "/#who" },
-    { label: "What", href: "/#what" },
-    { label: "How", href: "/#how" },
-    { label: "Bio", href: "/#bio" },
-    { label: "Lab", href: "/lab/" },
+    { label: "For you", href: "/#who" },
+    { label: "Services", href: "/#what" },
+    { label: "Process", href: "/#how" },
+    { label: "About", href: "/#bio" },
   ],
+  navLabel: "Sections",
+  contact: { label: "Contact", href: "#talk" },
 
   hero: {
     // the headline cycles through these every few seconds; the first one is what the server renders.
@@ -32,9 +54,9 @@ export const site = {
       [{ text: "Your work," }, { text: "minus the", style: "outline" }, { text: "busywork.", style: "mark" }],
       [{ text: "AI, built" }, { text: "into how", style: "outline" }, { text: "you work.", style: "mark" }],
     ],
-    kicker: ["Practical.", "Simple.", "Yours to keep."],
-    badge: "AI process integrator ✦ Tel Aviv ✦ human in the loop ✦ ",
-    sub: "I plug AI into how your team already works. Dev pipelines or the office.",
+    kicker: ["The boring parts", "of your business,", "automated."],
+    badge: "AI process integrator ✦ human in the loop ✦ ",
+    sub: "Plug AI into how your team already works. Dev pipelines or the office.",
     primary: { label: "Book a call", href: "https://cal.com/avrik" },
     secondary: { label: "See how", href: "#how" },
   },
@@ -43,25 +65,23 @@ export const site = {
   lanes: [
     {
       id: "dev",
-      icon: "terminal",
       title: "Dev teams",
       line: "Agents in the pipeline, not in the way.",
       sticker: "Ship it!",
-      tags: ["AI code review", "agent workflows", "agent-ready repos"],
     },
     {
       id: "biz",
-      icon: "briefcase",
-      title: "Small business",
+      title: "Business teams",
       line: "The repetitive work, off your plate.",
       sticker: "Finally!",
-      tags: ["intake & triage", "document automation", "your files, answered"],
     },
   ],
 
   // ── road maps: opened from each lane's call to action ──
   roadmap: {
+    label: "Road map",
     cta: { show: "See the road map", hide: "Close road map" },
+    close: "Close the road map",
     outcomeLabel: "What you get",
     dev: {
       title: "Dev teams",
@@ -114,8 +134,8 @@ export const site = {
       ],
     },
     biz: {
-      title: "Small business",
-      intro: "The repetitive, day-to-day work that eats a small team's time, and the road out of it.",
+      title: "Business teams",
+      intro: "The repetitive, day-to-day work that eats your team's week, and the road out of it.",
       problems: [
         {
           title: "The inbox eats the morning",
@@ -168,53 +188,105 @@ export const site = {
   what: {
     title: "Find the friction. Automate it.",
     sub: "I map where your business loses time: the repetitive, manual, copy-paste work. Then I build AI that takes it over and is simple enough that your team actually uses it.",
+    hint: "Pick a card",
   },
 
+  // the service cards: one hand per lane. detail is the back of the card, one short line
   tiles: [
-    { icon: "review", label: "Code review", lane: "dev" },
-    { icon: "agent", label: "Agent workflows", lane: "dev" },
-    { icon: "repo", label: "Agent-ready repos", lane: "dev" },
-    { icon: "inbox", label: "Intake & triage", lane: "biz" },
-    { icon: "doc", label: "Document automation", lane: "biz" },
-    { icon: "book", label: "Knowledge base", lane: "biz" },
+    {
+      icon: "review",
+      label: "AI code review",
+      lane: "dev",
+      detail: "Every PR gets a first pass. People review the logic, not the lint.",
+    },
+    {
+      icon: "agent",
+      label: "Agentic workflows",
+      lane: "dev",
+      detail: "Agents run the multi-step chores in your pipeline, then hand off to a person.",
+    },
+    {
+      icon: "system",
+      label: "Design-system alignment",
+      lane: "dev",
+      detail: "Tokens flow from design to code. Off-system values get flagged in review.",
+    },
+    {
+      icon: "merge",
+      label: "Unified agent rules",
+      lane: "dev",
+      detail: "One rulebook in the repo that Claude, Cursor and Copilot all follow.",
+    },
+    {
+      icon: "heal",
+      label: "Self-healing E2E tests",
+      lane: "dev",
+      detail: "End-to-end tests that adapt when the UI changes, instead of breaking.",
+    },
+    {
+      icon: "doc",
+      label: "Document automation",
+      lane: "biz",
+      detail: "Client details flow into your templates. You check, sign, send.",
+    },
+    {
+      icon: "ask",
+      label: "Answers from your files",
+      lane: "biz",
+      detail: "A private assistant that answers from your documents and shows the source.",
+    },
+    {
+      icon: "reply",
+      label: "Draft replies",
+      lane: "biz",
+      detail: "Routine emails and WhatsApps arrive pre-written. You press send.",
+    },
+    {
+      icon: "bell",
+      label: "Client follow-ups",
+      lane: "biz",
+      detail: "Polite reminders for missing info, in your tone, on your schedule.",
+    },
+    {
+      icon: "invoice",
+      label: "Quotes & invoices",
+      lane: "biz",
+      detail: "Built from the request, priced from your list, waiting for your OK.",
+    },
   ],
 
   marquee: [
     "code review",
-    "intake",
+    "design systems",
     "agents",
     "contracts",
     "pipelines",
-    "triage",
+    "e2e tests",
+    "invoices",
     "docs",
+    "follow-ups",
     "training",
     "hand-over",
   ],
 
+  stepsTitle: "Three steps. Stop after any.",
   steps: [
     { icon: "ear", title: "Listen", line: "Your team already knows what hurts." },
     { icon: "flask", title: "Pilot", line: "One workflow, two weeks, measured." },
     { icon: "hand", title: "Hand over", line: "Your people keep the context." },
   ],
 
-  // ── bio: who's behind this. path: the career so far, oldest first; the last stop is today ──
+  // ── bio: who's behind this ──
   bio: {
-    label: "Avrik Berman · Tel Aviv",
+    label: "Avrik Berman",
     title: "Hi, I'm Avrik.",
     // one entry per paragraph; closer is the sign-off line under them
     about: [
-      "I trained as an animator and have spent 16+ years building large web products: online games, cybersecurity platforms, AI developer tools.",
-      "Along the way I've led front-end teams, built design systems and data-visualisation engines from scratch, and set up the reviews, pipelines and standards that keep big codebases healthy.",
-      "These days I put AI into the development process itself: code rules, skills and agent workflows that help teams ship faster without cutting corners.",
+      "I find the work that eats your team's week: the repetitive, manual, copy-paste parts. Then I hand it to AI.",
+      "For business teams, that means requests that sort themselves, documents that fill themselves in, and answers pulled straight from your own files. For dev teams, it's AI code review, agentic workflows, and repos that agents can actually work in.",
+      "Every solution is fitted to how you already work, measured in time and money saved, and yours to keep. Behind it are 16+ years of building large web products and leading the teams that ship them.",
     ],
-    closer: "Hand me your tech debt. I'll own it.", //   keeps "tech debt" on one line
-    path: [
-      { title: "Animator & designer", line: "Motion, drawing, and an eye for how things feel to use." },
-      { title: "Front-end expert", line: "The code between the design and the user, and the teams that ship it." },
-      { title: "AI builder", line: "AI that fits how your team already works. Practical, measured, yours to keep." },
-    ],
-    now: "Now",
-    after: { text: "After hours: game jams and side projects.", link: "See the lab", href: "/lab/" },
+    closer: "Hand me the busywork. I'll take it from there.", //   keeps the last two words together
     // the CSS cartoon above the bio (Portrait.astro). sticker: the tag on its corner
     portrait: {
       alt: "Cartoon of Avrik: curly hair on top with short sides, big eyes, stubble, a hint of a smile, a plain T-shirt, and a small yellow bird nesting in his hair.",
@@ -225,16 +297,21 @@ export const site = {
   talk: {
     headline: "Let's talk.",
     sub: "Thirty minutes. No deck.",
+    cta: "Book a call",
   },
 
-  // ── /lab/: side projects. image: a 4:3 screenshot in public/lab/. behind: optional behind-the-scenes bullets ──
+  // ── /lab/: side projects. Not linked from the home page for now; the route stays live.
+  // One Project per card, see the type at the top ──
   lab: {
     title: "Built after hours.",
     sub: "Side projects. Things I make on my own time, live and in use.",
+    metaTitle: "Lab — Avrik",
+    metaDescription: "Side projects by Avrik Berman:", // the project names follow
+    screenshot: "Screenshot of", // alt text prefix, the project name follows
     projects: [
       {
         name: "Wayback News",
-        native: "מעתמול",
+        aka: { text: "מעתמול", lang: "he" },
         url: "https://wayback.news",
         image: "/lab/wayback-news.webp",
         sticker: "Est. 1926",
@@ -248,6 +325,7 @@ export const site = {
       },
       {
         name: "TerraTale",
+        aka: null,
         url: "https://bridge-town.netlify.app",
         image: "/lab/terratale.webp",
         sticker: "Play!",
@@ -255,13 +333,13 @@ export const site = {
         line: "A merge-three puzzle game. Match three, grow the wilds, one day per move.",
         how: "Pixel art, made for your phone.",
       },
-    ],
+    ] as Project[],
   },
 
   // the bird that peeps out of the clouds now and then says one of these
   birdSays: ["peep!", "hi!", "psst!", "boo!"],
 
-  footer: "Avrik Berman · Tel Aviv · built with Astro",
+  footer: { text: "Avrik Berman · built with Astro" },
 };
 
 export type Site = typeof site;
