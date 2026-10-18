@@ -1,0 +1,19 @@
+# Netlify reads this from the branch being built, so it overrides the dashboard's build
+# settings (which still describe the old Angular site on master2020).
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# the llms.txt files are plain text with Hebrew in them: say so, or browsers guess the encoding
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+
+[[headers]]
+  for = "/he/llms.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
